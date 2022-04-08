@@ -3,6 +3,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
+#include "player.h"
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -52,89 +53,66 @@ void move_player(char ** mapa, int * pos_x, int * pos_y, int x, int y)
     *pos_x = x;
 }
 
-void gravidade_cristal(char ** mapa, int i, int j)
-{    
-    //Cristal encontrado com espaco vazio embaixo
-    if (mapa[i][j] == '*' && mapa[i+1][j] == ' ')
-        mapa[i][j] = 65;
-    
-    //Tempo de aceleracao da pedra
-    if ((mapa[i][j] >= 65 && mapa[i][j] < 68) && mapa[i+1][j] == ' ')
-        mapa[i][j] = mapa[i][j] + 1;
-    
-    //Pedra comeca cair e ganhar mais velocidade
-    if ((mapa[i][j] >= 68 && mapa[i][j] <= 70) && mapa[i+1][j] == ' ')
-    {
-        //Se a velocidade eh menor que 5 ela aumenta, senao, mantem-se constante
-        if (mapa[i][j] <= 70)
-            mapa[i+1][j] = mapa[i][j] + 1;
-        else
-            mapa[i+1][j] = mapa[i][j];
-
-        mapa[i][j] = ' ';
-    }
-
-    //Pedra caiu e bateu em objeto, velocidade volta a ser 0
-    if ((mapa[i][j] >= 65 && mapa[i][j] <= 71) && mapa[i+1][j] != ' ')
-        mapa[i][j] = '*';
+int eh_cristal(char obj)
+{
+    return (obj == '*' || (obj >= 65 && obj <= 68));
 }
 
-void gravidade_pedra(char ** mapa, int i, int j)
+int eh_pedra(char obj)
+{
+    return (obj == 'o' || (obj >= 48 && obj <= 51));
+}
+
+void gravidade(char ** mapa, int i, int j, char obj, int min, int max)
 {
     //Pedra encontrada com espaco vazio embaixo
-    if (mapa[i][j] == 'o' && mapa[i+1][j] == ' ')
-        mapa[i][j] = '0';
+    if (mapa[i][j] == obj && mapa[i+1][j] == ' ')
+        mapa[i][j] = min;
 
     //Pedra em cima de pedra
-    else if (mapa[i][j] == 'o' && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*'))
+    else if (mapa[i][j] == obj && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*'))
     {
         //Pedra tomba para direita
         if (mapa[i][j+1] == ' ' && mapa[i+1][j+1] == ' ')
         {
             mapa[i][j] = ' ';
-            mapa[i][j+1] = '1';
+            mapa[i][j+1] = min + 1;
         }
 
         //Pedra tomba para esquerda
-        if (mapa[i][j-1] == ' ' && mapa[i+1][j-1] == ' ')
+        else if (mapa[i][j-1] == ' ' && mapa[i+1][j-1] == ' ')
         {
             mapa[i][j] = ' ';
-            mapa[i][j-1] = '1';
+            mapa[i][j-1] = min + 1;
         }
     }
     
     //Tempo de aceleracao da pedra
-    else if ((mapa[i][j] >= '0' && mapa[i][j] < '3') && mapa[i+1][j] == ' ')
+    else if ((mapa[i][j] >= min && mapa[i][j] < max) && mapa[i+1][j] == ' ')
         mapa[i][j] = mapa[i][j] + 1;
     
-    //Pedra comeca cair e ganhar mais velocidade
-    else if ((mapa[i][j] >= '3' && mapa[i][j] <= '5') && mapa[i+1][j] == ' ')
+    //Pedra comeca cair
+    else if (mapa[i][j] == max && mapa[i+1][j] == ' ')
     {
-        //Se a velocidade eh menor que 5 ela aumenta, senao, mantem-se constante
-        if (mapa[i][j] < 5)
-            mapa[i+1][j] = mapa[i][j] + 1;
-        else
-            mapa[i+1][j] = mapa[i][j];
-
+        mapa[i+1][j] = mapa[i][j];
         mapa[i][j] = ' ';
     }
 
     //Pedra caiu e bateu em objeto, velocidade volta a ser 0
-    else if ((mapa[i][j] >= '0' && mapa[i][j] <= '8') && mapa[i+1][j] != ' ')
-        mapa[i][j] = 'o';
-
+    else if ((mapa[i][j] >= min && mapa[i][j] <= max) && mapa[i+1][j] != ' ')
+        mapa[i][j] = obj;
 }
 
-void verifica_pedras(char ** mapa, int lin, int col)
+void verifica_gravidade(char ** mapa, int lin, int col)
 {
     for (int i = lin - 2; i > 0; i--)
         for (int j = 0; j < col; j++)
         {
-            gravidade_pedra(mapa, i, j);
-            gravidade_cristal(mapa, i, j);
+            if(eh_pedra(mapa[i][j]))
+                gravidade(mapa, i, j, 'o', 48, 51);
 
-            // if(mapa[i][j] == '*' || (mapa[i][j] >= 65 && mapa[i][j] <= 71))
-            //     gravidade_cristal(mapa, i, j); 
+            if(eh_cristal(mapa[i][j]))
+                gravidade(mapa, i, j, '*', 65, 68);
         }
 }
 
@@ -230,7 +208,7 @@ int main()
                         if (pos_valida(mapa, x+1, y)) x++;
 
                     move_player(mapa, &pos_x, &pos_y, x, y);
-                    verifica_pedras(mapa, lin, col);
+                    verifica_gravidade(mapa, lin, col);
 
                     if(key[ALLEGRO_KEY_ESCAPE])
                         done = true;
