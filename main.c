@@ -9,27 +9,6 @@
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
 
-char ** inicia_mapa(int lin, int col)
-{
-    char ** mapa = malloc(sizeof(char*) * lin);
-    mapa[0] = malloc(sizeof(char) * lin * col);
-
-    for (int i = 0; i < lin; i++)
-        mapa[i] = mapa[0] + i * col;
-
-    return mapa;
-}
-
-void carrega_mapa(char ** mapa, int lin, int col)
-{
-    for (int i = 0; i < lin; i++)
-    {
-        for (int j = 0; j < col; j++)
-            fscanf(stdin, "%c", &mapa[i][j]);       
-        fscanf(stdin, "\n");
-    }
-}
-
 void imprime_mapa(char ** mapa, int lin, int col)
 {
     for (int i = 0; i < lin; i++)
@@ -59,13 +38,9 @@ void must_init(bool test, const char *description)
 
 int main()
 {
-    cenario_t cenario;
+    cenario_t * cenario = carrega_cenario("mapa1.txt");
 
-    fscanf(stdin, "%d %d \n", &cenario.lin, &cenario.col);
-
-    cenario.mapa = inicia_mapa(cenario.lin, cenario.col);
-    carrega_mapa(cenario.mapa, cenario.lin, cenario.col);
-    imprime_mapa(cenario.mapa, cenario.lin, cenario.col);
+    imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
 
     must_init(al_init(), "allegro");
     must_init(al_install_keyboard(), "keyboard");
@@ -107,12 +82,7 @@ int main()
     int x = pos_x;
     int y = pos_y;
 
-    int vel_x = 32;
-    float vel_y = 31.3;
-
-    int aceleracao = 0;
-
-    printf("%c\n", cenario.mapa[y][x]);
+    printf("%c\n", cenario->mapa[y][x]);
 
     al_start_timer(tick);
     al_start_timer(timer);
@@ -127,18 +97,26 @@ int main()
                 if(event.timer.source == tick)
                 {
                     if(key[ALLEGRO_KEY_UP])
-                        if (pos_valida(cenario.mapa, x, y-1)) y--;
+                    {
+                        if (pos_valida(cenario->mapa, x, y-1)) y--;
+                    }
                     
-                    if(key[ALLEGRO_KEY_DOWN])
-                        if (pos_valida(cenario.mapa, x, y+1)) y++;
+                    else if(key[ALLEGRO_KEY_DOWN])
+                    {
+                        if (pos_valida(cenario->mapa, x, y+1)) y++;
+                    }
 
-                    if(key[ALLEGRO_KEY_LEFT])
-                        if (pos_valida(cenario.mapa, x-1, y)) x--;
+                    else if(key[ALLEGRO_KEY_LEFT])
+                    {
+                        if (pos_valida(cenario->mapa, x-1, y)) x--;
+                    }
 
-                    if(key[ALLEGRO_KEY_RIGHT])
-                        if (pos_valida(cenario.mapa, x+1, y)) x++;
+                    else if(key[ALLEGRO_KEY_RIGHT])
+                    {
+                        if (pos_valida(cenario->mapa, x+1, y)) x++;
+                    }
 
-                    move_player(cenario.mapa, &pos_x, &pos_y, x, y);
+                    move_player(cenario->mapa, &pos_x, &pos_y, x, y);
                     verifica_gravidade(cenario);
 
                     if(key[ALLEGRO_KEY_ESCAPE])
@@ -170,16 +148,16 @@ int main()
         if(redraw && al_is_event_queue_empty(queue))
         {            
             atualiza_cenario(cenario, sprites);
-            imprime_mapa(cenario.mapa, cenario.lin, cenario.col);
+            imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
 
             redraw = false;
         }
     }
 
-    cenario.mapa[2][2] = '0';
+    cenario->mapa[2][2] = '0';
 
-    if (cenario.mapa[2][2] == 48)
-        printf("%c\n", cenario.mapa[2][2] - 1);
+    if (cenario->mapa[2][2] == 48)
+        printf("%c\n", cenario->mapa[2][2] - 1);
 
     al_destroy_bitmap(sprites);
     al_destroy_font(font);

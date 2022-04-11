@@ -9,11 +9,18 @@ typedef struct cenario {
 } cenario_t;
 
 //Carrega sprites do cenario
-void atualiza_cenario(cenario_t cenario, ALLEGRO_BITMAP * sprites);
+void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites);
 
 //Verifica se a posicao pode ser acessada (nao possui pedra nem muro)
 int pos_valida(char ** mapa, int x, int y);
 
 //Verifica a gravidade de pedras e cristais
-void verifica_gravidade(cenario_t cenario);
+void verifica_gravidade(cenario_t * cenario);
 void gravidade(char ** mapa, int i, int j, char obj, int min, int max);
+
+//Aloca matriz para o mapa
+char ** inicia_mapa(int lin, int col);
+
+//Carrega as informações dos mapas
+cenario_t * carrega_cenario(char * arquivo_cenario);
+

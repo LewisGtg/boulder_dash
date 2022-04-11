@@ -1,6 +1,7 @@
 typedef struct player {
     int pos_x;
     int pos_y;
+    
     int sprite;
 
 } player;
