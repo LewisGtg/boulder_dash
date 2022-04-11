@@ -69,6 +69,11 @@ void atualiza_cenario(cenario_t cenario, ALLEGRO_BITMAP * sprites)
     al_flip_display();
 }
 
+int pos_valida(char ** mapa, int x, int y)
+{
+    return (mapa[y][x] != '#' && mapa[y][x] != 'o');
+}
+
 static int eh_cristal(char obj)
 {
     return (obj == '*' || (obj >= 65 && obj <= 68));

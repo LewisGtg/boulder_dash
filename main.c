@@ -40,11 +40,6 @@ void imprime_mapa(char ** mapa, int lin, int col)
     }
 }
 
-int pos_valida(char ** mapa, int x, int y)
-{
-    return (mapa[y][x] != '#' && mapa[y][x] != 'o');
-}
-
 void move_player(char ** mapa, int * pos_x, int * pos_y, int x, int y)
 {
     mapa[*pos_y][*pos_x] = ' ';
@@ -68,7 +63,6 @@ int main()
 
     fscanf(stdin, "%d %d \n", &cenario.lin, &cenario.col);
 
-    
     cenario.mapa = inicia_mapa(cenario.lin, cenario.col);
     carrega_mapa(cenario.mapa, cenario.lin, cenario.col);
     imprime_mapa(cenario.mapa, cenario.lin, cenario.col);
