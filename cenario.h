@@ -1,5 +1,4 @@
-#include <allegro5/allegro5.h>
-#include <allegro5/allegro_image.h>
+#include "allegro.h"
 
 #ifndef __CEN__
 #define __CEN__

@@ -1,6 +1,3 @@
-#include <allegro5/allegro5.h>
-#include<stdio.h>
-#include<stdlib.h>
 #include "player.h"
 
 player_t * inicia_player(int x, int y)
@@ -15,6 +12,8 @@ player_t * inicia_player(int x, int y)
 
     player->x = x;
     player->y = y;
+
+    player->vivo = true;
 
     player->sprite_x = 0;
     player->sprite_y = 0;
@@ -67,3 +66,4 @@ void movimenta(unsigned char key[], cenario_t * cenario, player_t * player)
 
     movimenta_player(cenario, player->x, player->y);
 }
+

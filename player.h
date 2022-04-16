@@ -1,4 +1,5 @@
 #include "cenario.h"
+#include "allegro.h"
 
 #ifndef __PLAY__
 #define __PLAY__
@@ -6,6 +7,7 @@
 typedef struct player {
     int x;
     int y;
+    bool vivo;
     
     int sprite_x;
     int sprite_y;
@@ -22,5 +24,4 @@ void atualiza_player(player_t * player, ALLEGRO_BITMAP * sprites);
 
 //Identifica qual tecla de movimento foi pressionada e se possivel move o player de acordo
 void movimenta(unsigned char key[], cenario_t * cenario, player_t * player);
-
 #endif

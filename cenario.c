@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "cenario.h"
 
 void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
@@ -38,7 +36,7 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
                     al_draw_scaled_bitmap(sprites, 48, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
                 break;
 
-                //Caso encontre cristal
+                //Caso encontre cristais, tanto parados, quanto caindo
                 case '*':
                 case 65:
                 case 66:
@@ -63,7 +61,8 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
 
 int pos_valida(char ** mapa, int x, int y)
 {
-    return (mapa[y][x] != '#' && mapa[y][x] != 'o');
+    char prox = mapa[y][x];
+    return (prox != '#' && prox != 'o' && prox != '0' &&  prox != '1' && prox != '2' && prox != '3');
 }
 
 static int eh_cristal(char obj)
@@ -81,6 +80,9 @@ void gravidade(char ** mapa, int i, int j, char obj, int min, int max)
     //Pedra ou cristal encontrada com espaco vazio embaixo
     if (mapa[i][j] == obj && mapa[i+1][j] == ' ')
         mapa[i][j] = min;
+
+    if (mapa[i][j] == max && mapa[i+1][j] == '@')
+        exit(1);
 
     //Pedra em cima de pedra, ou, cristal em cuma de crital
     else if (mapa[i][j] == obj && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*'))
@@ -112,7 +114,7 @@ void gravidade(char ** mapa, int i, int j, char obj, int min, int max)
     }
 
     //Pedra ou cristal caiu e bateu em objeto, velocidade volta a ser 0
-    else if ((mapa[i][j] >= min && mapa[i][j] <= max) && mapa[i+1][j] != ' ')
+    else if ((mapa[i][j] >= min && mapa[i][j] <= max) && (mapa[i+1][j] != ' ') && (mapa[i+1][j] != '@'))
         mapa[i][j] = obj;
 }
 
