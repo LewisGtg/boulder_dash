@@ -4,9 +4,6 @@
 
 void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
 {
-    //"Limpa" a tela
-    al_clear_to_color(al_map_rgb(0, 0, 0));
-
     //Percorre a matriz do mapa e carrega as sprites de acordo com seu tipo
     int lin_atual = 1;
     for (int y = 0; y < cenario->lin; y++)
@@ -50,11 +47,6 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
                     al_draw_scaled_bitmap(sprites, 0, 64, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
                 break;
 
-                //Caso encontre player
-                case '@':
-                    al_draw_scaled_bitmap(sprites, 0, 0, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
-                break;
-
                 //Caso encontre espaco vazio
                 case ' ':
                     al_draw_scaled_bitmap(sprites, 96, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
@@ -67,8 +59,6 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
         //Atualiza a linha que devera ser desenhada
         lin_atual++;
     }
-
-    al_flip_display();
 }
 
 int pos_valida(char ** mapa, int x, int y)
@@ -150,16 +140,29 @@ char ** inicia_mapa(int lin, int col)
     return mapa;
 }
 
-cenario_t * carrega_cenario(char * arquivo_cenario)
+cenario_t * inicia_cenario()
 {
-
-    //Abre arquivo e testa 
-    FILE * arq;
     cenario_t * cenario = malloc(sizeof(cenario));
 
+    if (!cenario)
+    {
+        perror("Erro ao alocar cenário.");
+        exit(1);
+    }
+
+    cenario->mapa = NULL;
+
+    return cenario;
+}
+
+void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
+{
+    //Abre arquivo e testa 
+    FILE * arq;
     arq = fopen(arquivo_cenario, "r");
 
-    if (!arq || !cenario)
+
+    if (!arq)
     {
         perror("Erro ao abrir cenário.");
         exit(1);
@@ -169,7 +172,8 @@ cenario_t * carrega_cenario(char * arquivo_cenario)
 
     fscanf(arq, "%d %d \n", &cenario->lin, &cenario->col);
 
-    cenario->mapa = inicia_mapa(cenario->lin, cenario->col);
+    if (!cenario->mapa)
+        cenario->mapa = inicia_mapa(cenario->lin, cenario->col);
 
     for (int i = 0; i < cenario->lin; i++)
     {
@@ -178,7 +182,16 @@ cenario_t * carrega_cenario(char * arquivo_cenario)
         fscanf(arq, "\n");
     }
 
-    fclose(arq);
+    fscanf(arq, "%d %d \n", &cenario->posY_player, &cenario->posX_player);
 
-    return cenario;
+    fclose(arq);
+}
+
+void movimenta_player(cenario_t * cenario, int new_x, int new_y)
+{
+    cenario->mapa[cenario->posY_player][cenario->posX_player] = ' ';
+    cenario->mapa[new_y][new_x] = '@';
+
+    cenario->posY_player = new_y;
+    cenario->posX_player = new_x;
 }

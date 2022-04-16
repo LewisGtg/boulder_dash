@@ -1,12 +1,18 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
 
+#ifndef __CEN__
+#define __CEN__
+
 typedef struct cenario {
     int lin, col;
     char ** mapa;
 
-    float posX_player, posY_player;
+    int posX_player, posY_player;
 } cenario_t;
+
+//Aloca memoria para o cenario e retorna o endereco
+cenario_t * inicia_cenario();
 
 //Carrega sprites do cenario
 void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites);
@@ -22,5 +28,9 @@ void gravidade(char ** mapa, int i, int j, char obj, int min, int max);
 char ** inicia_mapa(int lin, int col);
 
 //Carrega as informações dos mapas
-cenario_t * carrega_cenario(char * arquivo_cenario);
+void carrega_cenario(cenario_t * cenario, char * arquivo_cenario);
 
+//Atualiza a posicao do player na matriz
+void movimenta_player(cenario_t * cenario, int new_x, int new_y);
+
+#endif

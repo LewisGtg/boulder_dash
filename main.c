@@ -38,7 +38,10 @@ void must_init(bool test, const char *description)
 
 int main()
 {
-    cenario_t * cenario = carrega_cenario("mapa1.txt");
+    cenario_t * cenario = inicia_cenario();
+    carrega_cenario(cenario, "mapa.txt");
+
+    player_t * rockford = inicia_player(cenario->posX_player, cenario->posY_player);
 
     imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
 
@@ -76,14 +79,6 @@ int main()
     bool redraw = true;
     ALLEGRO_EVENT event;
 
-    int pos_x = 3;
-    int pos_y = 2;
-
-    int x = pos_x;
-    int y = pos_y;
-
-    printf("%c\n", cenario->mapa[y][x]);
-
     al_start_timer(tick);
     al_start_timer(timer);
 
@@ -96,27 +91,7 @@ int main()
             case ALLEGRO_EVENT_TIMER:
                 if(event.timer.source == tick)
                 {
-                    if(key[ALLEGRO_KEY_UP])
-                    {
-                        if (pos_valida(cenario->mapa, x, y-1)) y--;
-                    }
-                    
-                    else if(key[ALLEGRO_KEY_DOWN])
-                    {
-                        if (pos_valida(cenario->mapa, x, y+1)) y++;
-                    }
-
-                    else if(key[ALLEGRO_KEY_LEFT])
-                    {
-                        if (pos_valida(cenario->mapa, x-1, y)) x--;
-                    }
-
-                    else if(key[ALLEGRO_KEY_RIGHT])
-                    {
-                        if (pos_valida(cenario->mapa, x+1, y)) x++;
-                    }
-
-                    move_player(cenario->mapa, &pos_x, &pos_y, x, y);
+                    movimenta(key, cenario, rockford);
                     verifica_gravidade(cenario);
 
                     if(key[ALLEGRO_KEY_ESCAPE])
@@ -146,8 +121,14 @@ int main()
             break;
 
         if(redraw && al_is_event_queue_empty(queue))
-        {            
+        {    
+            al_clear_to_color(al_map_rgb(0, 0, 0));        
+            
             atualiza_cenario(cenario, sprites);
+            atualiza_player(rockford, sprites);
+            
+            al_flip_display();
+
             imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
 
             redraw = false;
