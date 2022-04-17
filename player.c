@@ -42,28 +42,8 @@ void atualiza_player(player_t * player, ALLEGRO_BITMAP * sprites)
     player->sprite_cooldown++;
 }
 
-void movimenta(unsigned char key[], cenario_t * cenario, player_t * player)
+void morte(player_t * player)
 {
-    if(key[ALLEGRO_KEY_UP])
-    {
-        if (pos_valida(cenario->mapa, player->x, player->y-1)) player->y--;
-    }
-    
-    else if(key[ALLEGRO_KEY_DOWN])
-    {
-        if (pos_valida(cenario->mapa, player->x, player->y+1)) player->y++;
-    }
-
-    else if(key[ALLEGRO_KEY_LEFT])
-    {
-        if (pos_valida(cenario->mapa, player->x-1, player->y)) player->x--;
-    }
-
-    else if(key[ALLEGRO_KEY_RIGHT])
-    {
-        if (pos_valida(cenario->mapa, player->x+1, player->y)) player->x++;
-    }
-
-    movimenta_player(cenario, player->x, player->y);
+    player->vivo = false;
 }
 

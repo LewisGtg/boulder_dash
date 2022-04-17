@@ -43,14 +43,38 @@ int main()
             case ALLEGRO_EVENT_TIMER:
                 if(allegro->event.timer.source == allegro->tick)
                 {
-                    movimenta(allegro->key, cenario, rockford);
-                    verifica_gravidade(cenario);
+                    if(allegro->key[ALLEGRO_KEY_UP])
+                    {
+                        if (pos_valida(cenario->mapa, rockford->x, rockford->y-1)) rockford->y--;
+                    }
+
+                    else if(allegro->key[ALLEGRO_KEY_DOWN])
+                    {
+                        if (pos_valida(cenario->mapa, rockford->x, rockford->y+1)) rockford->y++;
+                    }
+
+                    else if(allegro->key[ALLEGRO_KEY_LEFT])
+                    {
+                        if (pos_valida(cenario->mapa, rockford->x-1, rockford->y)) rockford->x--;
+                    }
+
+                    else if(allegro->key[ALLEGRO_KEY_RIGHT])
+                    {
+                        if (pos_valida(cenario->mapa, rockford->x+1, rockford->y)) rockford->x++;
+                    }
 
                     if(allegro->key[ALLEGRO_KEY_ESCAPE])
                         done = true;
 
                     for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
                         allegro->key[i] &= KEY_SEEN;
+
+                    movimenta_player(cenario, rockford);
+                    verifica_gravidade(cenario, rockford);
+
+                    if (!rockford->vivo)
+                        done = true;
+                    
                 }
                 redraw = true;
                 break;
@@ -69,9 +93,6 @@ int main()
                 break;
         }
 
-        if(done)
-            break;
-
         if(redraw && al_is_event_queue_empty(allegro->queue))
         {    
             al_clear_to_color(al_map_rgb(0, 0, 0));        
@@ -85,6 +106,9 @@ int main()
 
             redraw = false;
         }
+
+        if(done)
+            break;
     }
 
     cenario->mapa[2][2] = '0';

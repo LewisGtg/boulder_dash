@@ -59,12 +59,6 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
     }
 }
 
-int pos_valida(char ** mapa, int x, int y)
-{
-    char prox = mapa[y][x];
-    return (prox != '#' && prox != 'o' && prox != '0' &&  prox != '1' && prox != '2' && prox != '3');
-}
-
 static int eh_cristal(char obj)
 {
     return (obj == '*' || (obj >= 65 && obj <= 68));
@@ -75,14 +69,20 @@ static int eh_pedra(char obj)
     return (obj == 'o' || (obj >= 48 && obj <= 51));
 }
 
-void gravidade(char ** mapa, int i, int j, char obj, int min, int max)
+int pos_valida(char ** mapa, int x, int y)
+{
+    char prox = mapa[y][x]; 
+    return (prox != '#' && prox != 'o' && !(prox >= 48 && prox <= 51) && !(prox >= 65 && prox <= 68));
+}
+
+void gravidade(char ** mapa, player_t * player, int i, int j, char obj, int min, int max)
 {
     //Pedra ou cristal encontrada com espaco vazio embaixo
     if (mapa[i][j] == obj && mapa[i+1][j] == ' ')
         mapa[i][j] = min;
 
     if (mapa[i][j] == max && mapa[i+1][j] == '@')
-        exit(1);
+        morte(player);
 
     //Pedra em cima de pedra, ou, cristal em cuma de crital
     else if (mapa[i][j] == obj && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*'))
@@ -118,16 +118,16 @@ void gravidade(char ** mapa, int i, int j, char obj, int min, int max)
         mapa[i][j] = obj;
 }
 
-void verifica_gravidade(cenario_t * cenario)
+void verifica_gravidade(cenario_t * cenario, player_t * player)
 {
     for (int i = cenario->lin - 2; i > 0; i--)
     for (int j = 0; j < cenario->col; j++)
     {
         if(eh_pedra(cenario->mapa[i][j]))
-            gravidade(cenario->mapa, i, j, 'o', 48, 51);
+            gravidade(cenario->mapa, player, i, j, 'o', 48, 51);
 
         if(eh_cristal(cenario->mapa[i][j]))
-            gravidade(cenario->mapa, i, j, '*', 65, 68);
+            gravidade(cenario->mapa, player, i, j, '*', 65, 68);
     }
 }
 
@@ -189,11 +189,11 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
     fclose(arq);
 }
 
-void movimenta_player(cenario_t * cenario, int new_x, int new_y)
+void movimenta_player(cenario_t * cenario, player_t * player)
 {
     cenario->mapa[cenario->posY_player][cenario->posX_player] = ' ';
-    cenario->mapa[new_y][new_x] = '@';
+    cenario->mapa[player->y][player->x] = '@';
 
-    cenario->posY_player = new_y;
-    cenario->posX_player = new_x;
+    cenario->posY_player = player->y;
+    cenario->posX_player = player->x;
 }
