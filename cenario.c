@@ -77,14 +77,15 @@ int pos_valida(char ** mapa, int x, int y)
 
 void gravidade(char ** mapa, player_t * player, int i, int j, char obj, int min, int max)
 {
+    //Verifica se um objeto caiu na cabeça do player
+    if (mapa[i][j] == max && mapa[i+1][j] == '@')
+        morte(player);
+
     //Pedra ou cristal encontrada com espaco vazio embaixo
     if (mapa[i][j] == obj && mapa[i+1][j] == ' ')
         mapa[i][j] = min;
 
-    if (mapa[i][j] == max && mapa[i+1][j] == '@')
-        morte(player);
-
-    //Pedra em cima de pedra, ou, cristal em cuma de crital
+    //Pedra em cima de pedra, ou, cristal em cima de crital
     else if (mapa[i][j] == obj && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*'))
     {
         //Pedra ou cristal tomba para direita
@@ -116,25 +117,33 @@ void gravidade(char ** mapa, player_t * player, int i, int j, char obj, int min,
     //Pedra ou cristal caiu e bateu em objeto, velocidade volta a ser 0
     else if ((mapa[i][j] >= min && mapa[i][j] <= max) && (mapa[i+1][j] != ' ') && (mapa[i+1][j] != '@'))
         mapa[i][j] = obj;
+
+
 }
 
 void verifica_gravidade(cenario_t * cenario, player_t * player)
 {
     for (int i = cenario->lin - 2; i > 0; i--)
-    for (int j = 0; j < cenario->col; j++)
-    {
-        if(eh_pedra(cenario->mapa[i][j]))
-            gravidade(cenario->mapa, player, i, j, 'o', 48, 51);
+        for (int j = 0; j < cenario->col; j++)
+        {
+            if(eh_pedra(cenario->mapa[i][j]))
+                gravidade(cenario->mapa, player, i, j, 'o', 48, 51);
 
-        if(eh_cristal(cenario->mapa[i][j]))
-            gravidade(cenario->mapa, player, i, j, '*', 65, 68);
-    }
+            if(eh_cristal(cenario->mapa[i][j]))
+                gravidade(cenario->mapa, player, i, j, '*', 65, 68);
+        }
 }
 
 char ** inicia_mapa(int lin, int col)
 {
     char ** mapa = malloc(sizeof(char*) * lin);
     mapa[0] = malloc(sizeof(char) * lin * col);
+
+    if (!mapa || !mapa[0])
+    {
+        perror("Erro ao alocar mapa!");
+        exit(1);
+    }
 
     for (int i = 0; i < lin; i++)
         mapa[i] = mapa[0] + i * col;

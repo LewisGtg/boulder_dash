@@ -111,11 +111,6 @@ int main()
             break;
     }
 
-    cenario->mapa[2][2] = '0';
-
-    if (cenario->mapa[2][2] == 48)
-        printf("%c\n", cenario->mapa[2][2] - 1);
-
     al_destroy_bitmap(allegro->sprites);
     al_destroy_font(allegro->font);
     al_destroy_display(allegro->disp);

@@ -42,6 +42,12 @@ void atualiza_player(player_t * player, ALLEGRO_BITMAP * sprites)
     player->sprite_cooldown++;
 }
 
+void muda_pos(player_t * player, int x, int y)
+{
+    player->x = x;
+    player->y = y;
+}
+
 void morte(player_t * player)
 {
     player->vivo = false;

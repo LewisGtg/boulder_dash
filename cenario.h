@@ -8,6 +8,9 @@ typedef struct cenario {
     int lin, col;
     char ** mapa;
 
+    int pontos;
+    int tempo;
+
     int posX_player, posY_player;
 } cenario_t;
 
