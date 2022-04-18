@@ -59,6 +59,15 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
     }
 }
 
+void atualiza_painel(cenario_t * cenario, player_t * player, ALLEGRO_FONT * font)
+{
+    char pontos_obt[100];
+    sprintf(pontos_obt, "%d", player->pontos_obt);
+    
+    al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, pontos_obt);
+
+}
+
 static int eh_cristal(char obj)
 {
     return (obj == '*' || (obj >= 65 && obj <= 68));
@@ -71,7 +80,7 @@ static int eh_pedra(char obj)
 
 int pos_valida(char ** mapa, int x, int y)
 {
-    char prox = mapa[y][x]; 
+    char prox = mapa[y][x];
     return (prox != '#' && prox != 'o' && !(prox >= 48 && prox <= 51) && !(prox >= 65 && prox <= 68));
 }
 
@@ -153,7 +162,7 @@ char ** inicia_mapa(int lin, int col)
 
 cenario_t * inicia_cenario()
 {
-    cenario_t * cenario = malloc(sizeof(cenario));
+    cenario_t * cenario = malloc(sizeof(cenario_t));
 
     if (!cenario)
     {
@@ -194,6 +203,7 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
     }
 
     fscanf(arq, "%d %d \n", &cenario->posY_player, &cenario->posX_player);
+    fscanf(arq, "%d\n", &cenario->pontos);
 
     fclose(arq);
 }
@@ -205,4 +215,11 @@ void movimenta_player(cenario_t * cenario, player_t * player)
 
     cenario->posY_player = player->y;
     cenario->posX_player = player->x;
+}
+
+void verifica_ponto(cenario_t * cenario, player_t * player)
+{
+    if (cenario->mapa[player->y][player->x] == '*')
+        player->pontos_obt += 1;
+
 }

@@ -9,7 +9,6 @@ typedef struct cenario {
     char ** mapa;
 
     int pontos;
-    int tempo;
 
     int posX_player, posY_player;
 } cenario_t;
@@ -19,6 +18,9 @@ cenario_t * inicia_cenario();
 
 //Carrega sprites do cenario
 void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites);
+
+//Carrega e atualiza o painel de pontuação e tempo
+void atualiza_painel(cenario_t * cenario, player_t * player, ALLEGRO_FONT * font);
 
 //Verifica se a posicao pode ser acessada (nao possui pedra nem muro)
 int pos_valida(char ** mapa, int x, int y);
@@ -35,5 +37,8 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario);
 
 //Atualiza a posicao do player na matriz
 void movimenta_player(cenario_t * cenario, player_t * player);
+
+//Verifica se o player pegou um cristal
+void verifica_ponto(cenario_t * cenario, player_t * player);
 
 #endif

@@ -13,6 +13,8 @@ player_t * inicia_player(int x, int y)
     player->x = x;
     player->y = y;
 
+    player->pontos_obt = 0;
+
     player->vivo = true;
 
     player->sprite_x = 0;

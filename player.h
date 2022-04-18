@@ -6,6 +6,9 @@
 typedef struct player {
     int x;
     int y;
+
+    int pontos_obt;
+
     bool vivo;
     
     int sprite_x;

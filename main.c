@@ -29,7 +29,7 @@ int main()
     //Inicia o player
     player_t * rockford = inicia_player(cenario->posX_player, cenario->posY_player);
 
-    imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
+    //imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
 
     bool done = false;
     bool redraw = true;
@@ -69,6 +69,7 @@ int main()
                     for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
                         allegro->key[i] &= KEY_SEEN;
 
+                    verifica_ponto(cenario, rockford);
                     movimenta_player(cenario, rockford);
                     verifica_gravidade(cenario, rockford);
 
@@ -99,10 +100,12 @@ int main()
             
             atualiza_cenario(cenario, allegro->sprites);
             atualiza_player(rockford, allegro->sprites);
+            atualiza_painel(cenario, rockford, allegro->font);
             
             al_flip_display();
 
-            imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
+            //imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
+            printf("%d\n", rockford->pontos_obt);
 
             redraw = false;
         }
