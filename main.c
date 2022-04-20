@@ -22,9 +22,13 @@ int main()
     //Define um ponteiro para estrutura allegro e inicia seus componentes
     allegro_t * allegro = inicia_allegro();
     
+    char ** fases = malloc(sizeof(char) * 100);
+    fases[0] = "mapa.txt";
+    fases[1] = "mapa1.txt";
+
     //Inicia o cenário de acordo com o arquivo passado, e o carrega
     cenario_t * cenario = inicia_cenario();
-    carrega_cenario(cenario, "mapa.txt");
+    carrega_cenario(cenario, fases[0]);
 
     //Inicia o player
     player_t * rockford = inicia_player(cenario->posX_player, cenario->posY_player);
@@ -41,6 +45,11 @@ int main()
         switch(allegro->event.type)
         {
             case ALLEGRO_EVENT_TIMER:
+                if(allegro->event.timer.source == allegro->timer)
+                    if (tempo_acabou(cenario))
+                        done = true;
+
+
                 if(allegro->event.timer.source == allegro->tick)
                 {
                     if(allegro->key[ALLEGRO_KEY_UP])
@@ -72,6 +81,11 @@ int main()
                     verifica_ponto(cenario, rockford);
                     movimenta_player(cenario, rockford);
                     verifica_gravidade(cenario, rockford);
+
+                    if (passou_fase(cenario, rockford))
+                    {
+                        carrega_cenario(cenario, fases[1]);
+                    }
 
                     if (!rockford->vivo)
                         done = true;
@@ -105,7 +119,6 @@ int main()
             al_flip_display();
 
             //imprime_mapa(cenario->mapa, cenario->lin, cenario->col);
-            printf("%d\n", rockford->pontos_obt);
 
             redraw = false;
         }
@@ -117,6 +130,8 @@ int main()
     al_destroy_bitmap(allegro->sprites);
     al_destroy_font(allegro->font);
     al_destroy_display(allegro->disp);
+    al_destroy_timer(allegro->fps);
+    al_destroy_timer(allegro->tick);
     al_destroy_timer(allegro->timer);
     al_destroy_event_queue(allegro->queue);
 

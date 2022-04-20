@@ -8,9 +8,11 @@ typedef struct cenario {
     int lin, col;
     char ** mapa;
 
-    int pontos;
+    int min_cristais;
+    int tempo;
 
     int posX_player, posY_player;
+    int saida_x, saida_y;
 } cenario_t;
 
 //Aloca memoria para o cenario e retorna o endereco
@@ -40,5 +42,11 @@ void movimenta_player(cenario_t * cenario, player_t * player);
 
 //Verifica se o player pegou um cristal
 void verifica_ponto(cenario_t * cenario, player_t * player);
+
+//Verifica se o player passou de fase
+int passou_fase(cenario_t * cenario, player_t * player);
+
+//Verifica se o tempo acabou
+int tempo_acabou(cenario_t * cenario);
 
 #endif

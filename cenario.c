@@ -45,6 +45,13 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
                     al_draw_scaled_bitmap(sprites, 0, 64, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
                 break;
 
+                case 's':
+                    if (cenario->min_cristais <= 0)
+                        al_draw_scaled_bitmap(sprites, 16, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
+                    else
+                        al_draw_scaled_bitmap(sprites, 0, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
+                break;
+
                 //Caso encontre espaco vazio
                 case ' ':
                     al_draw_scaled_bitmap(sprites, 96, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
@@ -61,11 +68,18 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
 
 void atualiza_painel(cenario_t * cenario, player_t * player, ALLEGRO_FONT * font)
 {
-    char pontos_obt[100];
-    sprintf(pontos_obt, "%d", player->pontos_obt);
-    
-    al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, pontos_obt);
+    char cristais[100];
+    sprintf(cristais, "%d", player->cristais);
 
+    char score[100];
+    sprintf(score, "%d", player->score);
+
+    char tempo[100];
+    sprintf(tempo, "%d", cenario->tempo);
+    
+    al_draw_text(font, al_map_rgb(255, 255, 255), 200, 14, 0, cristais);
+    al_draw_text(font, al_map_rgb(255, 255, 255), 1250, 14, 0, score);
+    al_draw_text(font, al_map_rgb(255, 255, 255), 1000, 14, 0, tempo);
 }
 
 static int eh_cristal(char obj)
@@ -198,12 +212,26 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
     for (int i = 0; i < cenario->lin; i++)
     {
         for (int j = 0; j < cenario->col; j++)
+        {
             fscanf(arq, "%c", &cenario->mapa[i][j]);       
+            
+            if (cenario->mapa[i][j] == '@')
+            {
+                cenario->posY_player = i;
+                cenario->posX_player = j;
+            }
+
+            if (cenario->mapa[i][j] == 's')
+            {
+                cenario->saida_y = i;
+                cenario->saida_x = j;
+            }
+        }
         fscanf(arq, "\n");
     }
 
-    fscanf(arq, "%d %d \n", &cenario->posY_player, &cenario->posX_player);
-    fscanf(arq, "%d\n", &cenario->pontos);
+    fscanf(arq, "%d\n", &cenario->min_cristais);
+    fscanf(arq, "%d\n", &cenario->tempo);
 
     fclose(arq);
 }
@@ -220,6 +248,25 @@ void movimenta_player(cenario_t * cenario, player_t * player)
 void verifica_ponto(cenario_t * cenario, player_t * player)
 {
     if (cenario->mapa[player->y][player->x] == '*')
-        player->pontos_obt += 1;
+    {
+        player->cristais += 1;
+        player->score += 10;
 
+        cenario->min_cristais -= 12;
+    }
+
+}
+
+int passou_fase(cenario_t * cenario, player_t * player)
+{
+    return (cenario->min_cristais <= 0 && player->x == cenario->saida_x && player->y == cenario->saida_y);
+}
+
+int tempo_acabou(cenario_t * cenario)
+{
+    if (cenario->tempo == 0)
+        return 1;
+    
+    cenario->tempo -= 1;
+    return 0;
 }

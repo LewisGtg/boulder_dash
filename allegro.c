@@ -17,11 +17,14 @@ allegro_t * inicia_allegro()
 
     memset(allegro->key, 0, sizeof(allegro->key));
 
-    allegro->timer = al_create_timer(1.0 / 60.0);
-    must_init(allegro->timer, "timer");
+    allegro->fps = al_create_timer(1.0 / 60.0);
+    must_init(allegro->fps, "fps");
 
     allegro->tick = al_create_timer(1.0 / 10.0);
     must_init(allegro->tick, "tick");
+
+    allegro->timer = al_create_timer(1.0 / 1.0);
+    must_init(allegro->timer, "timer");
 
     allegro->queue = al_create_event_queue();
     must_init(allegro->queue, "queue");
@@ -29,7 +32,7 @@ allegro_t * inicia_allegro()
     allegro->disp = al_create_display(1280, 720);
     must_init(allegro->disp, "display");
 
-    allegro->font = al_create_builtin_font();
+    allegro->font = al_load_font("Minecraft.ttf", 20, 0);
     must_init(allegro->font, "font");
 
     must_init(al_init_image_addon(), "image addon");
@@ -39,10 +42,13 @@ allegro_t * inicia_allegro()
     al_register_event_source(allegro->queue, al_get_keyboard_event_source());
     al_register_event_source(allegro->queue, al_get_display_event_source(allegro->disp));
     al_register_event_source(allegro->queue, al_get_timer_event_source(allegro->tick));
+    al_register_event_source(allegro->queue, al_get_timer_event_source(allegro->fps));
     al_register_event_source(allegro->queue, al_get_timer_event_source(allegro->timer));
 
     al_start_timer(allegro->tick);
+    al_start_timer(allegro->fps);
     al_start_timer(allegro->timer);
+
 
     return allegro;
 }

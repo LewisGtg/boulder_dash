@@ -7,7 +7,8 @@ typedef struct player {
     int x;
     int y;
 
-    int pontos_obt;
+    int cristais;
+    int score;
 
     bool vivo;
     
