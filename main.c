@@ -23,8 +23,8 @@ int main()
     allegro_t * allegro = inicia_allegro();
     
     char ** fases = malloc(sizeof(char) * 100);
-    fases[0] = "mapa.txt";
-    fases[1] = "mapa1.txt";
+    fases[0] = "fase1.txt";
+    fases[1] = "fase2.txt";
 
     //Inicia o cenário de acordo com o arquivo passado, e o carrega
     cenario_t * cenario = inicia_cenario();
@@ -64,12 +64,18 @@ int main()
 
                     else if(allegro->key[ALLEGRO_KEY_LEFT])
                     {
-                        if (pos_valida(cenario->mapa, rockford->x-1, rockford->y)) rockford->x--;
+                        if ((pos_valida(cenario->mapa, rockford->x-1, rockford->y)) ||
+                           (eh_pedra(cenario->mapa[rockford->y][rockford->x-1]) && 
+                           empurrou_pedra(cenario->mapa, 0, rockford->x-1, rockford->y)))
+                           rockford->x--;
                     }
 
                     else if(allegro->key[ALLEGRO_KEY_RIGHT])
                     {
-                        if (pos_valida(cenario->mapa, rockford->x+1, rockford->y)) rockford->x++;
+                            if ((pos_valida(cenario->mapa, rockford->x+1, rockford->y)) ||
+                           (eh_pedra(cenario->mapa[rockford->y][rockford->x+1]) && 
+                           empurrou_pedra(cenario->mapa, 1, rockford->x+1, rockford->y)))
+                           rockford->x++;
                     }
 
                     if(allegro->key[ALLEGRO_KEY_ESCAPE])
@@ -82,9 +88,15 @@ int main()
                     movimenta_player(cenario, rockford);
                     verifica_gravidade(cenario, rockford);
 
+                    if (rockford->cristais == cenario->min_cristais)
+                        abre_porta(cenario, rockford);
+
                     if (passou_fase(cenario, rockford))
                     {
                         carrega_cenario(cenario, fases[1]);
+                        reset_player(rockford);
+                        muda_pos(rockford, cenario->posX_player, cenario->posY_player);
+                        movimenta_player(cenario, rockford);
                     }
 
                     if (!rockford->vivo)

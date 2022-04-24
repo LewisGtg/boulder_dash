@@ -31,4 +31,7 @@ void muda_pos(player_t * player, int x, int y);
 //"Mata" o player
 void morte(player_t * player);
 
+//Reseta os dados do player
+int reset_player(player_t * player);
+
 #endif

@@ -46,10 +46,7 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
                 break;
 
                 case 's':
-                    if (cenario->min_cristais <= 0)
-                        al_draw_scaled_bitmap(sprites, 16, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
-                    else
-                        al_draw_scaled_bitmap(sprites, 0, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
+                    al_draw_scaled_bitmap(sprites, 16, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
                 break;
 
                 //Caso encontre espaco vazio
@@ -69,17 +66,22 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
 void atualiza_painel(cenario_t * cenario, player_t * player, ALLEGRO_FONT * font)
 {
     char cristais[100];
-    sprintf(cristais, "%d", player->cristais);
+    sprintf(cristais, "%2d", player->cristais);
 
     char score[100];
     sprintf(score, "%d", player->score);
 
     char tempo[100];
     sprintf(tempo, "%d", cenario->tempo);
+
+    char min[100];
+    sprintf(min, "%2d", cenario->min_cristais);
     
-    al_draw_text(font, al_map_rgb(255, 255, 255), 200, 14, 0, cristais);
-    al_draw_text(font, al_map_rgb(255, 255, 255), 1250, 14, 0, score);
-    al_draw_text(font, al_map_rgb(255, 255, 255), 1000, 14, 0, tempo);
+    al_draw_text(font, al_map_rgb(255, 255, 0), 100, 0, 0, cristais);
+    al_draw_text(font, al_map_rgb(255, 255, 255), 175, 0, 0, "/");
+    al_draw_text(font, al_map_rgb(255, 255, 255), 225, 0, 0, min);
+    al_draw_text(font, al_map_rgb(255, 255, 255), 1100, 0, 0, score);
+    al_draw_text(font, al_map_rgb(255, 255, 255), 900, 0, 0, tempo);
 }
 
 static int eh_cristal(char obj)
@@ -87,9 +89,27 @@ static int eh_cristal(char obj)
     return (obj == '*' || (obj >= 65 && obj <= 68));
 }
 
-static int eh_pedra(char obj)
+int eh_pedra(char obj)
 {
     return (obj == 'o' || (obj >= 48 && obj <= 51));
+}
+
+int empurrou_pedra(char ** mapa, int dir, int x, int y)
+{
+    int prox_x = x - 1;
+    if (dir)
+        prox_x = x + 1;
+
+    if (mapa[y][prox_x] == ' ' && mapa[y+1][x] != ' ')
+    {
+        int prob = rand() % 100;
+        if (prob >= 80)
+        {
+            mapa[y][prox_x] = 'o';
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int pos_valida(char ** mapa, int x, int y)
@@ -185,6 +205,7 @@ cenario_t * inicia_cenario()
     }
 
     cenario->mapa = NULL;
+    cenario->fator_score = 0;
 
     return cenario;
 }
@@ -225,6 +246,7 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
             {
                 cenario->saida_y = i;
                 cenario->saida_x = j;
+                cenario->mapa[i][j] = '#';
             }
         }
         fscanf(arq, "\n");
@@ -232,6 +254,8 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
 
     fscanf(arq, "%d\n", &cenario->min_cristais);
     fscanf(arq, "%d\n", &cenario->tempo);
+
+    cenario->fator_score++;
 
     fclose(arq);
 }
@@ -250,16 +274,18 @@ void verifica_ponto(cenario_t * cenario, player_t * player)
     if (cenario->mapa[player->y][player->x] == '*')
     {
         player->cristais += 1;
-        player->score += 10;
-
-        cenario->min_cristais -= 12;
+        player->score += 10 * cenario->fator_score;
     }
+}
 
+void abre_porta(cenario_t * cenario, player_t *player)
+{
+    cenario->mapa[cenario->saida_y][cenario->saida_x] = 's';
 }
 
 int passou_fase(cenario_t * cenario, player_t * player)
 {
-    return (cenario->min_cristais <= 0 && player->x == cenario->saida_x && player->y == cenario->saida_y);
+    return (player->x == cenario->saida_x && player->y == cenario->saida_y);
 }
 
 int tempo_acabou(cenario_t * cenario)

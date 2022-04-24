@@ -56,3 +56,8 @@ void morte(player_t * player)
     player->vivo = false;
 }
 
+int reset_player(player_t * player)
+{
+    return (player->cristais = 0);
+}
+

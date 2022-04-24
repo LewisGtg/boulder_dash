@@ -32,7 +32,9 @@ allegro_t * inicia_allegro()
     allegro->disp = al_create_display(1280, 720);
     must_init(allegro->disp, "display");
 
-    allegro->font = al_load_font("Minecraft.ttf", 20, 0);
+    must_init(al_init_font_addon(), "font init");
+    must_init(al_init_ttf_addon(), "ttf init");
+    allegro->font = al_load_font("bd_font.ttf", 40, 1);
     must_init(allegro->font, "font");
 
     must_init(al_init_image_addon(), "image addon");
