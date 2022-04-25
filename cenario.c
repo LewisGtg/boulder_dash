@@ -45,6 +45,7 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites)
                     al_draw_scaled_bitmap(sprites, 0, 64, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
                 break;
 
+                //Caso encontre a porta de saida
                 case 's':
                     al_draw_scaled_bitmap(sprites, 16, 48, 16, 16, col_atual * 32, lin_atual * 31.3, 32, 32, 0);
                 break;
@@ -129,7 +130,7 @@ void gravidade(char ** mapa, player_t * player, int i, int j, char obj, int min,
         mapa[i][j] = min;
 
     //Pedra em cima de pedra, ou, cristal em cima de crital
-    else if (mapa[i][j] == obj && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*'))
+    else if (mapa[i][j] == obj && (mapa[i+1][j] == 'o' || mapa[i+1][j] == '*' || mapa[i+1][j] == '#'))
     {
         //Pedra ou cristal tomba para direita
         if (mapa[i][j+1] == ' ' && mapa[i+1][j+1] == ' ')
@@ -208,56 +209,6 @@ cenario_t * inicia_cenario()
     cenario->fator_score = 0;
 
     return cenario;
-}
-
-void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
-{
-    //Abre arquivo e testa 
-    FILE * arq;
-    arq = fopen(arquivo_cenario, "r");
-
-
-    if (!arq)
-    {
-        perror("Erro ao abrir cenário.");
-        exit(1);
-    }
-
-    //Aloca memoria para o cenario
-
-    fscanf(arq, "%d %d \n", &cenario->lin, &cenario->col);
-
-    if (!cenario->mapa)
-        cenario->mapa = inicia_mapa(cenario->lin, cenario->col);
-
-    for (int i = 0; i < cenario->lin; i++)
-    {
-        for (int j = 0; j < cenario->col; j++)
-        {
-            fscanf(arq, "%c", &cenario->mapa[i][j]);       
-            
-            if (cenario->mapa[i][j] == '@')
-            {
-                cenario->posY_player = i;
-                cenario->posX_player = j;
-            }
-
-            if (cenario->mapa[i][j] == 's')
-            {
-                cenario->saida_y = i;
-                cenario->saida_x = j;
-                cenario->mapa[i][j] = '#';
-            }
-        }
-        fscanf(arq, "\n");
-    }
-
-    fscanf(arq, "%d\n", &cenario->min_cristais);
-    fscanf(arq, "%d\n", &cenario->tempo);
-
-    cenario->fator_score++;
-
-    fclose(arq);
 }
 
 void movimenta_player(cenario_t * cenario, player_t * player)

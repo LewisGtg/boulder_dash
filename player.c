@@ -1,6 +1,6 @@
 #include "player.h"
 
-player_t * inicia_player(int x, int y)
+player_t * inicia_player()
 {
     player_t * player = malloc(sizeof(player_t));
 
@@ -10,8 +10,8 @@ player_t * inicia_player(int x, int y)
         exit(1);
     }
 
-    player->x = x;
-    player->y = y;
+    player->x = 0;
+    player->y = 0;
 
     player->cristais = 0;
     player->score = 0;

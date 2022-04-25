@@ -41,9 +41,6 @@ void gravidade(char ** mapa, player_t * player, int i, int j, char obj, int min,
 //Aloca matriz para o mapa
 char ** inicia_mapa(int lin, int col);
 
-//Carrega as informações dos mapas
-void carrega_cenario(cenario_t * cenario, char * arquivo_cenario);
-
 //Atualiza a posicao do player na matriz
 void movimenta_player(cenario_t * cenario, player_t * player);
 

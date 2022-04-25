@@ -5,6 +5,9 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 
+#define KEY_SEEN     1
+#define KEY_RELEASED 2
+
 #ifndef __AL__
 #define __AL__
 
