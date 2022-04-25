@@ -20,19 +20,22 @@ boulder_dash * inicia_game()
     bd->cenario = inicia_cenario();
     bd->rockford = inicia_player();
 
+    bd->instrucoes = false;
+    bd->placar = false;
+
     bd->done = false;
     bd->redraw = true;
 
-    bd->fases[0] = "fase1.txt";
-    bd->fases[1] = "fase2.txt";
-    bd->fases[2] = "fase3.txt";
-    bd->fases[3] = "fase4.txt";
-    bd->fases[4] = "fase5.txt";
-    bd->fases[5] = "fase6.txt";
-    bd->fases[6] = "fase7.txt";
-    bd->fases[7] = "fase8.txt";
-    bd->fases[8] = "fase9.txt";
-    bd->fases[9] = "fase10.txt";
+    bd->fases[0] = "fase0.txt";
+    bd->fases[1] = "fase1.txt";
+    bd->fases[2] = "fase2.txt";
+    bd->fases[3] = "fase3.txt";
+    bd->fases[4] = "fase4.txt";
+    bd->fases[5] = "fase5.txt";
+    bd->fases[6] = "fase6.txt";
+    bd->fases[7] = "fase7.txt";
+    bd->fases[8] = "fase8.txt";
+    bd->fases[9] = "fase9.txt";
 
     bd->fase_atual = 0;
 
@@ -171,6 +174,11 @@ void processa_eventos(boulder_dash * bd)
                     inicia_fase(bd);
                 }
 
+                if(bd->allegro->key[ALLEGRO_KEY_H])
+                {
+                    bd->instrucoes = !bd->instrucoes;
+                }
+
                 for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
                     bd->allegro->key[i] &= KEY_SEEN;
                 
@@ -228,9 +236,14 @@ void atualiza_display(boulder_dash * bd)
     {    
         al_clear_to_color(al_map_rgb(0, 0, 0));        
         
-        atualiza_cenario(bd->cenario, bd->allegro->sprites);
-        atualiza_player(bd->rockford, bd->allegro->sprites);
-        atualiza_painel(bd->cenario, bd->rockford, bd->allegro->font);
+        if (bd->instrucoes)
+            le_arquivo(bd, "instrucoes.txt");
+        else
+        {
+            atualiza_cenario(bd->cenario, bd->allegro->sprites);
+            atualiza_player(bd->rockford, bd->allegro->sprites);
+            atualiza_painel(bd->cenario, bd->rockford, bd->allegro->font);    
+        }
         
         al_flip_display();
 
@@ -238,4 +251,27 @@ void atualiza_display(boulder_dash * bd)
     }
 }
 
+void le_arquivo(boulder_dash * bd, char * nome_arq)
+{
+    FILE * arq;
+    arq = fopen(nome_arq, "r");
 
+    if (!arq)
+    {
+        perror("Erro na função le_arquivo");
+        exit(1);
+    }
+
+    char linha[1024];
+
+    int i = 1;
+
+    while(!feof(arq))
+    {
+        fgets(linha, 1024, arq);
+        al_draw_text(bd->allegro->font_text, al_map_rgb(255, 255, 255), 10, 100 * i, 0, linha);
+        i++;
+    }
+
+    fclose(arq);
+}

@@ -23,6 +23,7 @@ typedef struct allegro {
     ALLEGRO_EVENT event;
     ALLEGRO_DISPLAY* disp;
     ALLEGRO_FONT* font;
+    ALLEGRO_FONT* font_text;
     ALLEGRO_BITMAP* sprites;
 } allegro_t;
 

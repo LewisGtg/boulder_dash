@@ -12,6 +12,9 @@ typedef struct boulder_dash{
     char ** fases;
     int fase_atual;
 
+    bool instrucoes;
+    bool placar;
+
     bool done;
     bool redraw;
 
@@ -34,3 +37,6 @@ void inicia_fase(boulder_dash * bd);
 
 //Abre um arquivo e carrega o cenario com as informações passadas
 void carrega_cenario(cenario_t * cenario, char * arquivo_cenario);
+
+//Le um arquivo txt e exibe na tela o conteudo
+void le_arquivo(boulder_dash * bd, char * nome_arq);

@@ -37,6 +37,9 @@ allegro_t * inicia_allegro()
     allegro->font = al_load_font("bd_font.ttf", 40, 1);
     must_init(allegro->font, "font");
 
+    allegro->font_text = al_load_font("bd_font.ttf", 20, 0);
+    must_init(allegro->font, "font texto");
+
     must_init(al_init_image_addon(), "image addon");
     allegro->sprites = al_load_bitmap("sprites.png");
     must_init(allegro->sprites, "sprites");
