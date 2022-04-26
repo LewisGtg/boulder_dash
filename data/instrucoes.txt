@@ -1,0 +1,7 @@
+Instruções:
+1.Utilize as setas para movimentar o player.
+2.Capture os cristais necessários para abrir a porta e passar para a proxima fase.
+3.Pedras e cristais matam caso caiam em cima do player.
+4.Utilize PgUp e PgDown para alternar entre as fases.
+
+Feito por Lewis.
