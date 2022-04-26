@@ -34,14 +34,14 @@ allegro_t * inicia_allegro()
 
     must_init(al_init_font_addon(), "font init");
     must_init(al_init_ttf_addon(), "ttf init");
-    allegro->font = al_load_font("bd_font.ttf", 40, 1);
+    allegro->font = al_load_font("./resources/fonts/bd_font.ttf", 40, 1);
     must_init(allegro->font, "font");
 
-    allegro->font_text = al_load_font("bd_font.ttf", 20, 0);
+    allegro->font_text = al_load_font("./resources/fonts/arial.ttf", 20, 0);
     must_init(allegro->font, "font texto");
 
     must_init(al_init_image_addon(), "image addon");
-    allegro->sprites = al_load_bitmap("sprites.png");
+    allegro->sprites = al_load_bitmap("./resources/sprites.png");
     must_init(allegro->sprites, "sprites");
 
     al_register_event_source(allegro->queue, al_get_keyboard_event_source());

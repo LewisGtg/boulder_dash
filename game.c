@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "game.h"
 
 boulder_dash * inicia_game()
@@ -19,6 +20,7 @@ boulder_dash * inicia_game()
     bd->allegro = inicia_allegro();
     bd->cenario = inicia_cenario();
     bd->rockford = inicia_player();
+    carrega_scores(bd);
 
     bd->instrucoes = false;
     bd->placar = false;
@@ -26,16 +28,16 @@ boulder_dash * inicia_game()
     bd->done = false;
     bd->redraw = true;
 
-    bd->fases[0] = "fase0.txt";
-    bd->fases[1] = "fase1.txt";
-    bd->fases[2] = "fase2.txt";
-    bd->fases[3] = "fase3.txt";
-    bd->fases[4] = "fase4.txt";
-    bd->fases[5] = "fase5.txt";
-    bd->fases[6] = "fase6.txt";
-    bd->fases[7] = "fase7.txt";
-    bd->fases[8] = "fase8.txt";
-    bd->fases[9] = "fase9.txt";
+    bd->fases[0] = "./resources/fases/fase0.txt";
+    bd->fases[1] = "./resources/fases/fase1.txt";
+    bd->fases[2] = "./resources/fases/fase2.txt";
+    bd->fases[3] = "./resources/fases/fase3.txt";
+    bd->fases[4] = "./resources/fases/fase4.txt";
+    bd->fases[5] = "./resources/fases/fase5.txt";
+    bd->fases[6] = "./resources/fases/fase6.txt";
+    bd->fases[7] = "./resources/fases/fase7.txt";
+    bd->fases[8] = "./resources/fases/fase8.txt";
+    bd->fases[9] = "./resources/fases/fase9.txt";
 
     bd->fase_atual = 0;
 
@@ -89,9 +91,8 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
 
     //Le o tempo e a quantidade minima de cristais do cenario
     fscanf(arq, "%d\n", &cenario->min_cristais);
+    fscanf(arq, "%d\n", &cenario->fator_score);
     fscanf(arq, "%d\n", &cenario->tempo);
-
-    cenario->fator_score++;
 
     fclose(arq);
 }
@@ -114,8 +115,8 @@ void processa_eventos(boulder_dash * bd)
         case ALLEGRO_EVENT_TIMER:
             //Timer do jogo
             if(bd->allegro->event.timer.source == bd->allegro->timer)
-                if (tempo_acabou(bd->cenario))
-                    bd->done = true;
+                if (!bd->instrucoes && tempo_acabou(bd->cenario))
+                    morte(bd->rockford);
 
             //Tick rate do jogo
             if(bd->allegro->event.timer.source == bd->allegro->tick)
@@ -154,13 +155,22 @@ void processa_eventos(boulder_dash * bd)
 
                 //Fecha o jogo
                 if(bd->allegro->key[ALLEGRO_KEY_ESCAPE])
-                    bd->done = true;
+                {
+                    if (bd->placar)
+                    {
+                        bd->done = true;
+                        return;
+                    }
+                    printf("Chegou\n");
+                    salva_score(bd);
+                    bd->placar = true;
+                }
 
                 //Teclas para alternar entre fases
 
                 if(bd->allegro->key[ALLEGRO_KEY_PGDN])
                 {
-                    if (bd->fase_atual < QTD_FASES)
+                    if (bd->fase_atual < QTD_FASES-1)
                         bd->fase_atual++;
                     
                     inicia_fase(bd);
@@ -174,7 +184,7 @@ void processa_eventos(boulder_dash * bd)
                     inicia_fase(bd);
                 }
 
-                if(bd->allegro->key[ALLEGRO_KEY_H])
+                if(bd->allegro->key[ALLEGRO_KEY_H] || bd->allegro->key[ALLEGRO_KEY_F1])
                 {
                     bd->instrucoes = !bd->instrucoes;
                 }
@@ -224,9 +234,10 @@ void atualiza_logica(boulder_dash * bd)
             inicia_fase(bd);
         }
 
-        //Player morreu, termina jogo
+        //Player morreu, mostra a pontuação
         if (!bd->rockford->vivo)
-            bd->done = true;
+            inicia_fase(bd);
+        
     }
 }
 
@@ -236,8 +247,13 @@ void atualiza_display(boulder_dash * bd)
     {    
         al_clear_to_color(al_map_rgb(0, 0, 0));        
         
+        //Mostra as instruções na tela ao invés do jogo caso tenha sido pressionado h ou F1
         if (bd->instrucoes)
-            le_arquivo(bd, "instrucoes.txt");
+            le_arquivo(bd, "./data/instrucoes.txt", 300, 25);
+
+        else if (bd->placar)
+            le_arquivo(bd, "./data/pontuacoes.txt", 500, 25);
+
         else
         {
             atualiza_cenario(bd->cenario, bd->allegro->sprites);
@@ -251,7 +267,7 @@ void atualiza_display(boulder_dash * bd)
     }
 }
 
-void le_arquivo(boulder_dash * bd, char * nome_arq)
+void le_arquivo(boulder_dash * bd, char * nome_arq, int tab, int lh)
 {
     FILE * arq;
     arq = fopen(nome_arq, "r");
@@ -266,12 +282,85 @@ void le_arquivo(boulder_dash * bd, char * nome_arq)
 
     int i = 1;
 
+    fgets(linha, 1024, arq);
     while(!feof(arq))
     {
+        al_draw_text(bd->allegro->font_text, al_map_rgb(255, 255, 255), tab, lh * i, 0, linha);
         fgets(linha, 1024, arq);
-        al_draw_text(bd->allegro->font_text, al_map_rgb(255, 255, 255), 10, 100 * i, 0, linha);
         i++;
     }
 
     fclose(arq);
 }
+
+void carrega_scores(boulder_dash * bd)
+{
+    FILE * score;
+    score = fopen("./data/pontuacoes.txt", "r+");
+
+    if (!score)
+    {
+        perror("Falha ao abrir arquivo de pontuação.");
+        exit(1);
+    }
+    
+    char linha_invalida[BUFSIZE];
+
+    //Descarta a primeira linha dos dados
+    fgets(linha_invalida, BUFSIZE, score);
+
+    int i = 0;
+    bd->tam_ptacoes = 0;
+    //Carrega as pontuacoes existentes
+    while(!feof(score))
+    {
+        fscanf(score, "%s", linha_invalida);
+        fscanf(score, "%d", &bd->pontuacoes[i]);
+        if (bd->tam_ptacoes < MAX_PONTUACOES)
+            bd->tam_ptacoes++;
+        i++;
+    }
+
+    fclose(score);
+}
+
+//Ordena o vetor de pontuações
+void insertion_sort(int vetor[], int * tam, int valor)
+{
+    int i = 0;
+    while(valor < vetor[i] && i < *tam) i++;
+
+    for (int j = *tam - 1; j >= i; j--)
+        if (j+1 < MAX_PONTUACOES)
+            vetor[j+1] = vetor[j]; 
+
+    if (i < MAX_PONTUACOES)
+    {
+        vetor[i] = valor;
+        if (*tam < MAX_PONTUACOES)
+            *tam++;
+    }
+        
+}
+
+void salva_score(boulder_dash * bd)
+{
+    insertion_sort(bd->pontuacoes, &bd->tam_ptacoes, bd->rockford->score);
+
+    FILE * score;
+    score = fopen("./data/pontuacoes.txt", "w");
+
+    if (!score)
+    {
+        perror("Erro ao abrir arquivo de pontuações");
+        exit(1);
+    }
+
+    fprintf(score, "Melhores Pontuações\n");
+
+    for (int i = 0; i < bd->tam_ptacoes; i++)
+        fprintf(score, "%2d. %5d\n", i+1, bd->pontuacoes[i]);
+
+    fclose(score);
+}
+

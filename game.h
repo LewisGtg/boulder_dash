@@ -3,6 +3,8 @@
 #include "allegro.h"
 
 #define QTD_FASES 10
+#define MAX_PONTUACOES 10
+#define BUFSIZE 1024
 
 typedef struct boulder_dash{
     cenario_t * cenario;
@@ -11,6 +13,9 @@ typedef struct boulder_dash{
 
     char ** fases;
     int fase_atual;
+
+    int pontuacoes[MAX_PONTUACOES];
+    int tam_ptacoes;
 
     bool instrucoes;
     bool placar;
@@ -39,4 +44,10 @@ void inicia_fase(boulder_dash * bd);
 void carrega_cenario(cenario_t * cenario, char * arquivo_cenario);
 
 //Le um arquivo txt e exibe na tela o conteudo
-void le_arquivo(boulder_dash * bd, char * nome_arq);
+void le_arquivo(boulder_dash * bd, char * nome_arq, int tab, int lh);
+
+//Carrega as pontuações existentes
+void carrega_scores(boulder_dash * bd);
+
+//Salva uma nova pontuacao
+void salva_score(boulder_dash * bd);

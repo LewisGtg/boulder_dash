@@ -206,7 +206,6 @@ cenario_t * inicia_cenario()
     }
 
     cenario->mapa = NULL;
-    cenario->fator_score = 0;
 
     return cenario;
 }
@@ -225,7 +224,7 @@ void verifica_ponto(cenario_t * cenario, player_t * player)
     if (cenario->mapa[player->y][player->x] == '*')
     {
         player->cristais += 1;
-        player->score += 10 * cenario->fator_score;
+        player->score += cenario->fator_score;
     }
 }
 
