@@ -85,6 +85,14 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
                 cenario->saida_x = j;
                 cenario->mapa[i][j] = '#';
             }
+
+            if (cenario->mapa[i][j] == 'q')
+            {
+                cenario->inimigos[cenario->qtd_inimigos] = inicia_inimigo(80, 64);
+                move_inimigo(cenario->inimigos[cenario->qtd_inimigos], i, j);
+                cenario->qtd_inimigos++;
+            }
+            
         }
         fscanf(arq, "\n");
     }
@@ -161,7 +169,6 @@ void processa_eventos(boulder_dash * bd)
                         bd->done = true;
                         return;
                     }
-                    printf("Chegou\n");
                     salva_score(bd);
                     bd->placar = true;
                 }
@@ -258,6 +265,10 @@ void atualiza_display(boulder_dash * bd)
         {
             atualiza_cenario(bd->cenario, bd->allegro->sprites);
             atualiza_player(bd->rockford, bd->allegro->sprites);
+
+            for (int i = 0; i < bd->cenario->qtd_inimigos; i++)
+                atualiza_inimigo(bd->cenario->inimigos[i], bd->allegro->sprites);
+
             atualiza_painel(bd->cenario, bd->rockford, bd->allegro->font);    
         }
         

@@ -198,13 +198,15 @@ char ** inicia_mapa(int lin, int col)
 cenario_t * inicia_cenario()
 {
     cenario_t * cenario = malloc(sizeof(cenario_t));
+    cenario->inimigos = malloc(sizeof(inimigo_t**) * MAX_INIMIGOS);
 
-    if (!cenario)
+    if (!cenario || !cenario->inimigos)
     {
         perror("Erro ao alocar cenário.");
         exit(1);
     }
 
+    cenario->qtd_inimigos = 0;
     cenario->mapa = NULL;
 
     return cenario;

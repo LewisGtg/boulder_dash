@@ -1,6 +1,7 @@
 #include "player.h"
 #include "cenario.h"
 #include "allegro.h"
+#include "inimigo.h"
 
 #define QTD_FASES 10
 #define MAX_PONTUACOES 10
