@@ -15,6 +15,10 @@ allegro_t * inicia_allegro()
     must_init(al_init(), "allegro");
     must_init(al_install_keyboard(), "keyboard");
 
+    must_init(al_install_audio(), "audio");
+    must_init(al_init_acodec_addon(), "audio codecs");
+    must_init(al_reserve_samples(16), "reserve samples");
+
     memset(allegro->key, 0, sizeof(allegro->key));
 
     allegro->fps = al_create_timer(1.0 / 60.0);

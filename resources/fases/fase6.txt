@@ -16,7 +16,7 @@
 #....o.o..o........o.....o............o#
 #......o....o....o..o.o......o.........#
 #..o.##############################....#
-#..o.BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB....#
+#..o.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh....#
 #o...oooooooooooooooooooooooooooooo.o..#
 #......................................#
 #.o................................o...#

@@ -20,6 +20,8 @@ typedef struct boulder_dash{
 
     bool instrucoes;
     bool placar;
+    bool cheatcode;
+    char * code;
 
     bool done;
     bool redraw;
@@ -52,3 +54,7 @@ void carrega_scores(boulder_dash * bd);
 
 //Salva uma nova pontuacao
 void salva_score(boulder_dash * bd);
+
+void retira_letra(char * code, int c);
+
+int habilitou_cheatcode(boulder_dash * bd);

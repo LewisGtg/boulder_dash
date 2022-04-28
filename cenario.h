@@ -10,6 +10,7 @@
 typedef struct cenario {
     int lin, col;
     char ** mapa;
+    bool porta_aberta;
 
     int min_cristais;
     int fator_score;
@@ -20,6 +21,15 @@ typedef struct cenario {
 
     int posX_player, posY_player;
     int saida_x, saida_y;
+
+    ALLEGRO_SAMPLE * som_pedra;
+    ALLEGRO_SAMPLE * som_pedra_colidiu;
+    ALLEGRO_SAMPLE * som_colidiu_inimigo;
+    ALLEGRO_SAMPLE * som_gameover;
+    ALLEGRO_SAMPLE * som_abriu_porta;
+    ALLEGRO_SAMPLE * som_pegou_cristal;
+    ALLEGRO_SAMPLE * som_abriu_instrucoes;
+    ALLEGRO_SAMPLE * som_cheatcode;
 } cenario_t;
 
 //Aloca memoria para o cenario e retorna o endereco
@@ -31,24 +41,39 @@ void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites);
 //Carrega e atualiza o painel de pontuação e tempo
 void atualiza_painel(cenario_t * cenario, player_t * player, ALLEGRO_FONT * font);
 
+//Transforma as gramas em volta do player em cristais
+void cenario_cheatcode(cenario_t * cenario, player_t * player);
+
 //Verifica se o objeto eh uma pedra
 int eh_pedra(char obj);
 
-//Verifica se a posicao pode ser acessada (nao possui pedra nem muro)
-int pos_valida(char ** mapa, int x, int y);
+//Verifica se a posicao pode ser acessada pelo player(nao possui pedra nem muro)
+int pos_valida_player(char ** mapa, int x, int y);
+
+//Verifica se a posicao pode ser acessada por algum inimigo
+int pos_valida_inimigo(char ** mapa, int x, int y);
+
+//Verifica se algum inimigo colidiu com o player
+int colisao_player(cenario_t * cenario, player_t * player);
 
 //Retorna 1 se o player conseguiu empurrar a pedra
 int empurrou_pedra(char ** mapa, int dir, int x, int y);
 
 //Verifica a gravidade de pedras e cristais
 void verifica_gravidade(cenario_t * cenario, player_t * player);
-void gravidade(char ** mapa, player_t * player, int i, int j, char obj, int min, int max);
+void gravidade(cenario_t * cenario, player_t * player, int i, int j, char obj, int min, int max);
 
 //Aloca matriz para o mapa
 char ** inicia_mapa(int lin, int col);
 
-//Atualiza a posicao do player na matriz
+//Procura posicoes validas para os inimigos e os movimenta
+void procura_pos_inimigos(cenario_t * cenario);
+
+//Atualiza a posicao do player no mapa
 void movimenta_player(cenario_t * cenario, player_t * player);
+
+//Atualiza a posicao do inimigo no mapa
+void movimenta_inimigo(cenario_t * cenario, inimigo_t * inimigo, int new_x, int new_y);
 
 //Verifica se o player pegou um cristal
 void verifica_ponto(cenario_t * cenario, player_t * player);
@@ -61,5 +86,8 @@ int passou_fase(cenario_t * cenario, player_t * player);
 
 //Verifica se o tempo acabou
 int tempo_acabou(cenario_t * cenario);
+
+//Limpa o vetor de inimigos
+void destroi_inimigos(cenario_t * cenario);
 
 #endif

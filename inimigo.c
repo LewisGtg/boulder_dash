@@ -1,7 +1,8 @@
 #include "inimigo.h"
 
-inimigo_t * inicia_inimigo(int sprite_x, int sprite_y)
+inimigo_t * inicia_inimigo(int rep, int sprite_x, int sprite_y)
 {
+    //Aloca memoria e testa
     inimigo_t * inimigo = malloc(sizeof(inimigo_t));
 
     if (!inimigo)
@@ -10,12 +11,14 @@ inimigo_t * inicia_inimigo(int sprite_x, int sprite_y)
         exit(1);
     }
 
+    inimigo->rep = rep;
+    inimigo->dir = 0;
+
     inimigo->sprite_x = sprite_x;
     inimigo->sprite_y = sprite_y;
     inimigo->sprite_cd = 100;
 
     inimigo->vivo = true;
-
 
     return inimigo;
 }

@@ -4,6 +4,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -25,6 +27,7 @@ typedef struct allegro {
     ALLEGRO_FONT* font;
     ALLEGRO_FONT* font_text;
     ALLEGRO_BITMAP* sprites;
+
 } allegro_t;
 
 //Inicia a biblioteca
