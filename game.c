@@ -334,11 +334,11 @@ void atualiza_display(boulder_dash * bd)
         
         //Mostra as instruções na tela ao invés do jogo caso tenha sido pressionado h ou F1
         if (bd->instrucoes)
-            le_arquivo(bd, "./data/instrucoes.txt", 300, 25);
+            le_arquivo(bd, "./resources/data/instrucoes.txt", 300, 25);
 
         //Mostra as 10 melhores pontuações caso o player tenha encerrado o jogo
         else if (bd->placar)
-            le_arquivo(bd, "./data/pontuacoes.txt", 500, 25);
+            le_arquivo(bd, "./resources/data/pontuacoes.txt", 500, 25);
 
         //Mostra os elementos do jogo 
         else
@@ -394,7 +394,7 @@ void carrega_scores(boulder_dash * bd)
 {
     //Abre arquivo de pontuacoes e testa
     FILE * score;
-    score = fopen("./data/pontuacoes.txt", "r+");
+    score = fopen("./resources/data/pontuacoes.txt", "r+");
 
     if (!score)
     {
@@ -458,7 +458,7 @@ void salva_score(boulder_dash * bd)
 
     //Abre arquivo de pontuacoes e testa
     FILE * score;
-    score = fopen("./data/pontuacoes.txt", "w");
+    score = fopen("./resources/data/pontuacoes.txt", "w");
 
     if (!score)
     {
