@@ -77,3 +77,21 @@ allegro_t * inicia_allegro()
     //Retorna estrutura
     return allegro;
 }
+
+void destroi_allegro(allegro_t * allegro)
+{
+    // Destroi ponteiros
+    al_destroy_display(allegro->disp);
+    al_destroy_bitmap(allegro->sprites);
+
+    al_destroy_font(allegro->font);
+    al_destroy_font(allegro->font_text);
+
+    al_destroy_timer(allegro->timer);
+    al_destroy_timer(allegro->tick);
+    al_destroy_timer(allegro->fps);
+
+    al_destroy_event_queue(allegro->queue);
+
+    free(allegro);
+}

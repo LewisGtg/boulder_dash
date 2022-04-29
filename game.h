@@ -38,6 +38,9 @@ typedef struct boulder_dash{
 //Inicia os componentes do jogo
 boulder_dash * inicia_game();
 
+//Desaloca todas estruturas utilizadas pelo game
+void destroi_game(boulder_dash * bd);
+
 //Le as entradas do teclado
 void processa_eventos(boulder_dash * bd);
 

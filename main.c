@@ -14,6 +14,8 @@ int main()
         atualiza_display(bd);
     }
 
+    destroi_game(bd);
+
     return 0;
 }
     

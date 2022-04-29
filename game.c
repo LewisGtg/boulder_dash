@@ -49,6 +49,18 @@ boulder_dash * inicia_game()
     return bd;
 }
 
+void destroi_game(boulder_dash * bd)
+{
+    destroi_cenario(bd->cenario);
+    destroi_player(bd->rockford);
+    destroi_allegro(bd->allegro);
+
+    free(bd->fases);
+    free(bd->code);
+
+    free(bd);
+}
+
 void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
 {
     //Abre arquivo e testa 

@@ -339,11 +339,27 @@ cenario_t * inicia_cenario()
 
 void destroi_cenario(cenario_t * cenario)
 {
+    //Libera memoria do mapa
     free(cenario->mapa[0]);
     free(cenario->mapa);
 
+    //Libera memoria de todos inimigos
     destroi_inimigos(cenario);
     free(cenario->inimigos);
+
+    //Libera memoria dos sons utilizados
+    al_destroy_sample(cenario->som_abriu_instrucoes);
+    al_destroy_sample(cenario->som_abriu_porta);
+    al_destroy_sample(cenario->som_cheatcode);
+    al_destroy_sample(cenario->som_colidiu_inimigo);
+    al_destroy_sample(cenario->som_concluiu_fase);
+    al_destroy_sample(cenario->som_explosao);
+    al_destroy_sample(cenario->som_gameover);
+    al_destroy_sample(cenario->som_pedra);
+    al_destroy_sample(cenario->som_pedra_colidiu);
+    al_destroy_sample(cenario->som_pegou_cristal);
+
+    free(cenario);
 }
 
 void inicia_sons(cenario_t * cenario)
