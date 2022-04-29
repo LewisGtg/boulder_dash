@@ -29,4 +29,7 @@ void atualiza_inimigo(inimigo_t * player, ALLEGRO_BITMAP * sprites);
 //Atualiza as coordenadas do inimigo
 void move_inimigo(inimigo_t * inimigo, int x, int y);
 
+//Mata o inimigo
+void morte_inimigo(inimigo_t * inimigo);
+
 #endif

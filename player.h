@@ -4,17 +4,19 @@
 #define __PLAY__
 
 typedef struct player {
-    int x;
-    int y;
+    //Coordenadas em que o player se encontra
+    int x, y;
 
-    int cristais;
-    int score;
+    //Quantidade de cristais e a pontuacao do player
+    int cristais, score;
 
+    //True se o player estiver vivo
     bool vivo;
     
-    int sprite_x;
-    int sprite_y;
+    //Coordenadas da sprite na imagem de sprites
+    int sprite_x, sprite_y;
 
+    //Tempo para trocar entre sprites
     int sprite_cooldown;
 
 } player_t;

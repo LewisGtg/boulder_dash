@@ -24,6 +24,7 @@ boulder_dash * inicia_game()
 
     bd->instrucoes = false;
     bd->placar = false;
+
     bd->cheatcode = false;
     bd->code = malloc(sizeof(char) * 6);
     strcpy(bd->code, "ci1002");
@@ -53,7 +54,6 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
     //Abre arquivo e testa 
     FILE * arq;
     arq = fopen(arquivo_cenario, "r");
-
 
     if (!arq)
     {
@@ -89,7 +89,8 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
                 cenario->saida_x = j;
                 cenario->mapa[i][j] = '#';
             }
-
+            
+            //Encontrou um tipo de inimigo, o inicia no vetor
             if (cenario->mapa[i][j] == 'q')
             {
                 cenario->inimigos[cenario->qtd_inimigos] = inicia_inimigo('q', 5, 4);
@@ -97,6 +98,7 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
                 cenario->qtd_inimigos++;
             }
 
+            //Encontrou um tipo de inimigo, o inicia no vetor
             if (cenario->mapa[i][j] == 'h')
             {
                 cenario->inimigos[cenario->qtd_inimigos] = inicia_inimigo('h', 6, 4);
@@ -120,13 +122,15 @@ void carrega_cenario(cenario_t * cenario, char * arquivo_cenario)
 
 void inicia_fase(boulder_dash * bd)
 {
-    //Passos necessários para iniciar uma nova fase
-    //if (bd->cenario->qtd_inimigos > 0)
+    //Caso tenham inimigos, serao destruidos para carregar uma nova fase
     destroi_inimigos(bd->cenario);
-
     carrega_cenario(bd->cenario, bd->fases[bd->fase_atual]);
+
+    //Movimenta o player para as novas coordenadas
     muda_pos(bd->rockford, bd->cenario->posX_player, bd->cenario->posY_player);
     movimenta_player(bd->cenario, bd->rockford);
+
+    //Reseta o status do player
     reset_player(bd->rockford);
 }
 
@@ -134,6 +138,7 @@ void processa_eventos(boulder_dash * bd)
 {
     al_wait_for_event(bd->allegro->queue, &bd->allegro->event);
 
+    //Processa o evento
     switch(bd->allegro->event.type)
     {
         case ALLEGRO_EVENT_TIMER:
@@ -148,23 +153,26 @@ void processa_eventos(boulder_dash * bd)
                 //Verifica quais teclas foram apertadas
 
                 //Teclas de movimentação, verifica se a posição requerida pode ser acessada
-                if(bd->allegro->key[ALLEGRO_KEY_UP] && bd->rockford->vivo)
+                if(bd->allegro->key[ALLEGRO_KEY_UP])
                 {
                     if (pos_valida_player(bd->cenario->mapa, bd->rockford->x, bd->rockford->y-1)) bd->rockford->y--;
+                    bd->rockford->sprite_y = 1;
                 }
 
-                else if(bd->allegro->key[ALLEGRO_KEY_DOWN] && bd->rockford->vivo)
+                else if(bd->allegro->key[ALLEGRO_KEY_DOWN])
                 {
                     if (pos_valida_player(bd->cenario->mapa, bd->rockford->x, bd->rockford->y+1)) bd->rockford->y++;
+                    bd->rockford->sprite_y = 2;
                 }
 
-                else if(bd->allegro->key[ALLEGRO_KEY_LEFT] && bd->rockford->vivo)
+                else if(bd->allegro->key[ALLEGRO_KEY_LEFT])
                 {
                     //Verifica se a posição é valida, mas também verifica se o player esta tentando empurrar uma pedra
                     if ((pos_valida_player(bd->cenario->mapa, bd->rockford->x-1, bd->rockford->y)) ||
                         (eh_pedra(bd->cenario->mapa[bd->rockford->y][bd->rockford->x-1]) && 
                         empurrou_pedra(bd->cenario->mapa, 0, bd->rockford->x-1, bd->rockford->y)))
                         bd->rockford->x--;
+                    bd->rockford->sprite_y = 1;
                 }
 
                 else if(bd->allegro->key[ALLEGRO_KEY_RIGHT] && bd->rockford->vivo)
@@ -174,23 +182,27 @@ void processa_eventos(boulder_dash * bd)
                         (eh_pedra(bd->cenario->mapa[bd->rockford->y][bd->rockford->x+1]) && 
                         empurrou_pedra(bd->cenario->mapa, 1, bd->rockford->x+1, bd->rockford->y)))
                         bd->rockford->x++;
+                    bd->rockford->sprite_y = 2;
                 }
+                else
+                    bd->rockford->sprite_y = 0;
 
 
-                //Fecha o jogo
                 if(bd->allegro->key[ALLEGRO_KEY_ESCAPE])
                 {
+                    //Player apertou esc duas vezes, jogo eh fechado
                     if (bd->placar)
                     {
                         bd->done = true;
                         return;
                     }
+
+                    //Player apertou esc apenas uma vez, placar eh mostrado
                     salva_score(bd);
                     bd->placar = true;
                 }
 
                 //Teclas para alternar entre fases
-
                 if(bd->allegro->key[ALLEGRO_KEY_PGDN])
                 {
                     if (bd->fase_atual < QTD_FASES-1)
@@ -207,6 +219,7 @@ void processa_eventos(boulder_dash * bd)
                     inicia_fase(bd);
                 }
 
+                //Abre menu de instrucoes
                 if(bd->allegro->key[ALLEGRO_KEY_H] || bd->allegro->key[ALLEGRO_KEY_F1])
                 {
                     al_play_sample(bd->cenario->som_abriu_instrucoes, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
@@ -256,32 +269,37 @@ void atualiza_logica(boulder_dash * bd)
     //Tick rate
     if(bd->allegro->event.timer.source == bd->allegro->tick)
     {
-        //Player morreu, mostra a pontuação
+        //Player morreu, renicia a fase
         if (!bd->rockford->vivo)
         {
             al_play_sample(bd->cenario->som_gameover, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
             al_rest(2);
             inicia_fase(bd);
-            return;
         }
 
+        //Habilitou ou desabilitou cheatcode, reseta o codigo
         if (habilitou_cheatcode(bd))
         {
+            al_play_sample(bd->cenario->som_cheatcode, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
             bd->cheatcode = !bd->cheatcode;
             strcpy(bd->code, "ci1002");
-            al_play_sample(bd->cenario->som_cheatcode, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
         }
 
         //Verifica se player pegou um cristal
         verifica_ponto(bd->cenario, bd->rockford);
         
+        //Movimentacao do player e inimigo
         movimenta_player(bd->cenario, bd->rockford);
-        verifica_gravidade(bd->cenario, bd->rockford);
         procura_pos_inimigos(bd->cenario);
 
+        //Aplica gravidade em elementos do cenario
+        verifica_gravidade(bd->cenario, bd->rockford);
+
+        //Cheatcode habilitado
         if (bd->cheatcode)
             cenario_cheatcode(bd->cenario, bd->rockford);
 
+        //Inimigo colidiu com player
         if (colisao_player(bd->cenario, bd->rockford))
         {
             al_play_sample(bd->cenario->som_colidiu_inimigo, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
@@ -295,15 +313,21 @@ void atualiza_logica(boulder_dash * bd)
         //Player passou pela porta aberta
         if (passou_fase(bd->cenario, bd->rockford))
         {
-            bd->fase_atual++;
+            al_play_sample(bd->cenario->som_concluiu_fase, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+
+            if (bd->fase_atual < 9)
+                bd->fase_atual++;
+            else
+                bd->fase_atual = 0;
+
             inicia_fase(bd);
         }
-        
     }
 }
 
 void atualiza_display(boulder_dash * bd)
 {
+    //Logica ja foi atualizada, portanto pode-se desenhar 
     if(bd->redraw && al_is_event_queue_empty(bd->allegro->queue))
     {    
         al_clear_to_color(al_map_rgb(0, 0, 0));        
@@ -319,12 +343,15 @@ void atualiza_display(boulder_dash * bd)
         //Mostra os elementos do jogo 
         else
         {
-            atualiza_cenario(bd->cenario, bd->allegro->sprites);
+            //Desenha player e elementos do cenario
             atualiza_player(bd->rockford, bd->allegro->sprites);
+            atualiza_cenario(bd->cenario, bd->allegro->sprites);
 
+            //Desenha todos inimigos da fase
             for (int i = 0; i < bd->cenario->qtd_inimigos; i++)
                 atualiza_inimigo(bd->cenario->inimigos[i], bd->allegro->sprites);
 
+            //Desenha o painel com as informacoes da fase
             atualiza_painel(bd->cenario, bd->rockford, bd->allegro->font);    
         }
         
@@ -375,6 +402,7 @@ void carrega_scores(boulder_dash * bd)
         exit(1);
     }
     
+    //String para pegar conteudo que nao util
     char linha_invalida[BUFSIZE];
 
     //Descarta a primeira linha dos dados
@@ -386,8 +414,13 @@ void carrega_scores(boulder_dash * bd)
     //Carrega as pontuacoes existentes
     while(!feof(score))
     {
+        //Le conteudo inutil
         fscanf(score, "%s", linha_invalida);
+
+        //Le o score e o carrega no vetor de pontuacoes
         fscanf(score, "%d", &bd->pontuacoes[i]);
+
+        //Carrega no max 10 pontuacoes
         if (bd->tam_ptacoes < MAX_PONTUACOES)
             bd->tam_ptacoes++;
         i++;
@@ -442,58 +475,75 @@ void salva_score(boulder_dash * bd)
     fclose(score);
 }
 
+int sequencia_correta(char * code, int tam)
+{
+    //Verifica se a sequencia esta sendo seguita ate determinado ponto do codigo
+    for (int i = 0; i < tam; i++)
+        if (code[i] != ' ')
+            return 0;
+    return 1;
+}
+
 void retira_letra(char * code, int c)
 {
-    if (c == 'c')
+    //Verifica se o usuario esta escrevendo o codigo para habilitar o cheat de maneira correta, ou seja, seguindo
+    //a sequencia c i 1 0 0 2
+
+    if (c == 'c' && sequencia_correta(code, 0))
     {
-        if (code[0] == 'c' && code[1] == 'i' && code[2] == '1' && code[3] == '0' && code[4] == '0' && code[5] == '2')
-            code[0] = ' ';
-        else
-            strcpy(code, "ci1002");
+        code[0] = ' ';
+        return;
     }
 
-    else if (c == 'i')
+    else if (c == 'i' && sequencia_correta(code, 1))
     {
-        if (code[0] == ' ' && code[1] == 'i' && code[2] == '1' && code[3] == '0' && code[4] == '0' && code[5] == '2')
-            code[1] = ' ';
-        else
-            strcpy(code, "ci1002");
+        code[1] = ' ';
+        return;
     }
 
-    else if (c == '1')
+    else if (c == '1' && sequencia_correta(code, 2))
     {
-        if (code[0] == ' ' && code[1] == ' ' && code[2] == '1' && code[3] == '0' && code[4] == '0' && code[5] == '2')
-            code[2] = ' ';
-        else
-            strcpy(code, "ci1002");
+        code[2] = ' ';
+        return;
     }
 
-    else if (c == '0')
+    else if (c == '0' && (sequencia_correta(code, 3) || sequencia_correta(code, 4)))
     {
-        if (code[0] == ' ' && code[1] == ' ' && code[2] == ' ' && code[3] == '0' && code[4] == '0' && code[5] == '2')
+        if (sequencia_correta(code, 4))
+            code[4] = ' ';
+        
+        if (sequencia_correta(code, 3))
             code[3] = ' ';
         
-        else if (code[0] == ' ' && code[1] == ' ' && code[2] == ' ' && code[3] == ' ' && code[4] == '0' && code[5] == '2')
-            code[4] = ' ';
-
-        else
-            strcpy(code, "ci1002");
+        return;
     }
 
-    else if (c == '2')
+    else if (c == '2' && sequencia_correta(code, 5))
     {
-        if (code[0] == ' ' && code[1] == ' ' && code[2] == ' ' && code[3] == ' ' && code[4] == ' ' && code[5] == '2')
-            code[5] = ' ';
-        else
-        strcpy(code, "ci1002");
+        code[5] = ' ';
+        return;
     }
+    
+    //Sequencia nao foi seguida, codigo eh resetado
+    strcpy(code, "ci1002");
 }
 
 int habilitou_cheatcode(boulder_dash * bd)
 {
+    //Verifica se o codigo foi digitado por completo
     for (int i = 0; i < strlen(bd->code); i++)
         if (bd->code[i] != ' ')
             return 0;
     
     return 1;
+}
+
+void imprime_mapa(cenario_t * cenario)
+{
+    for (int i = 0; i < cenario->lin; i++)
+    {
+        for (int j = 0; j < cenario->col; j++)
+            printf("%c", cenario->mapa[i][j]);
+        printf("\n");
+    }
 }

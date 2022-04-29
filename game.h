@@ -8,21 +8,28 @@
 #define BUFSIZE 1024
 
 typedef struct boulder_dash{
+    //Estruturas comuns ao jogo
     cenario_t * cenario;
     player_t * rockford;
     allegro_t * allegro;
 
+    //Array que contem os caminhos para as fases
     char ** fases;
     int fase_atual;
 
+    //Vetor que contem para armazenar ate 10 pontuacoes
     int pontuacoes[MAX_PONTUACOES];
     int tam_ptacoes;
 
+    //Booleanos que informam o "status" do jogo
     bool instrucoes;
     bool placar;
     bool cheatcode;
+
+    //Codigo para habilitar o cheat
     char * code;
 
+    //Controlam o gameloop e os desenhos na tela
     bool done;
     bool redraw;
 
@@ -55,6 +62,10 @@ void carrega_scores(boulder_dash * bd);
 //Salva uma nova pontuacao
 void salva_score(boulder_dash * bd);
 
+//Testa se a combinacao para habilitar o cheatcode esta sendo seguida
 void retira_letra(char * code, int c);
 
+//Retorna 1 caso o cheatcode tenha sido habilitado
 int habilitou_cheatcode(boulder_dash * bd);
+
+void imprime_mapa(cenario_t * cenario);

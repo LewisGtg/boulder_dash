@@ -5,31 +5,55 @@
 #ifndef __CEN__
 #define __CEN__
 
-#define MAX_INIMIGOS 20
+#define MAX_INIMIGOS 35
 
 typedef struct cenario {
+    //Dimensoes e matriz para representar o mapa
     int lin, col;
     char ** mapa;
+
+    //True se a porta estiver aberta
     bool porta_aberta;
 
+    //Minimo de cristais para passar de fase
     int min_cristais;
+
+    //Quanto vale cada cristal para o score
     int fator_score;
+
+    //Tempo maximo 
     int tempo;
 
+    //Vetor de inimigos referentes a cada fase
     inimigo_t ** inimigos;
     int qtd_inimigos;
 
+    //Posicao onde o player esta no mapa
     int posX_player, posY_player;
+
+    //Posicao da porta
     int saida_x, saida_y;
 
+    //Coordenadas das sprites dos critais
+    int cristal_x, cristal_y;
+
+    //Coordenadas das sprites das "explosoes"
+    int explosao_x, explosao_y;
+
+    //Cooldown das sprites
+    int sprite_cd;
+
+    //Sons do cenário
     ALLEGRO_SAMPLE * som_pedra;
     ALLEGRO_SAMPLE * som_pedra_colidiu;
     ALLEGRO_SAMPLE * som_colidiu_inimigo;
+    ALLEGRO_SAMPLE * som_explosao;
     ALLEGRO_SAMPLE * som_gameover;
     ALLEGRO_SAMPLE * som_abriu_porta;
     ALLEGRO_SAMPLE * som_pegou_cristal;
     ALLEGRO_SAMPLE * som_abriu_instrucoes;
     ALLEGRO_SAMPLE * som_cheatcode;
+    ALLEGRO_SAMPLE * som_concluiu_fase;
 } cenario_t;
 
 //Aloca memoria para o cenario e retorna o endereco
@@ -55,6 +79,8 @@ int pos_valida_inimigo(char ** mapa, int x, int y);
 
 //Verifica se algum inimigo colidiu com o player
 int colisao_player(cenario_t * cenario, player_t * player);
+
+void explode_cenario(cenario_t * cenario, player_t * player);
 
 //Retorna 1 se o player conseguiu empurrar a pedra
 int empurrou_pedra(char ** mapa, int dir, int x, int y);
@@ -89,5 +115,8 @@ int tempo_acabou(cenario_t * cenario);
 
 //Limpa o vetor de inimigos
 void destroi_inimigos(cenario_t * cenario);
+
+//Inicia os sons do cenario
+void inicia_sons(cenario_t * cenario);
 
 #endif

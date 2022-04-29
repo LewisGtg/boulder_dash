@@ -17,10 +17,12 @@
 typedef struct allegro {
     unsigned char key[ALLEGRO_KEY_MAX];
     
+    //Timers do jogo
     ALLEGRO_TIMER * fps;
     ALLEGRO_TIMER * tick;
     ALLEGRO_TIMER * timer;
 
+    //Elementos utilizados 
     ALLEGRO_EVENT_QUEUE * queue;
     ALLEGRO_EVENT event;
     ALLEGRO_DISPLAY* disp;
@@ -32,6 +34,9 @@ typedef struct allegro {
 
 //Inicia a biblioteca
 allegro_t * inicia_allegro();
+
+//Desaloca estruturas usadas
+void destroi_allegro(allegro_t * allegro);
 
 //Função auxiliar para testar se os ponteiros foram inicializados corretamente
 void must_init(bool teste, const char * description);

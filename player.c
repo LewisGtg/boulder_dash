@@ -2,6 +2,7 @@
 
 player_t * inicia_player()
 {
+    //Aloca memoria para estrutura e testa
     player_t * player = malloc(sizeof(player_t));
 
     if (!player)
@@ -10,9 +11,7 @@ player_t * inicia_player()
         exit(1);
     }
 
-    player->x = 0;
-    player->y = 0;
-
+    //Inicializa elementos do player
     player->cristais = 0;
     player->score = 0;
 
@@ -23,6 +22,7 @@ player_t * inicia_player()
 
     player->sprite_cooldown = 0;
 
+    //Retorna estrutura
     return player;
 }
 
