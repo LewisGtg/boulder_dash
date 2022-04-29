@@ -445,8 +445,8 @@ void insertion_sort(int vetor[], int * tam, int valor)
     if (i < MAX_PONTUACOES)
     {
         vetor[i] = valor;
-        if (*tam < MAX_PONTUACOES)
-            *tam++;
+        // if (*tam < MAX_PONTUACOES)
+        //     *tam++;
     }
         
 }
