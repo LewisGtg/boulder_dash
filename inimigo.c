@@ -25,6 +25,12 @@ inimigo_t * inicia_inimigo(int rep, int sprite_x, int sprite_y)
     return inimigo;
 }
 
+void destroi_inimigo(inimigo_t * inimigo)
+{
+    free(inimigo);
+    inimigo = NULL;
+}
+
 void atualiza_inimigo(inimigo_t * inimigo, ALLEGRO_BITMAP * sprites)
 {
     if (inimigo->sprite_cd == 5)

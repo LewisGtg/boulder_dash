@@ -26,6 +26,12 @@ player_t * inicia_player()
     return player;
 }
 
+void destroi_player(player_t * player)
+{
+    free(player);
+    player = NULL;
+}
+
 void atualiza_player(player_t * player, ALLEGRO_BITMAP * sprites)
 {
     //Desenha o player na tela

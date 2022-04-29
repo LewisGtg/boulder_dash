@@ -23,6 +23,9 @@ typedef struct inimigo {
 //Aloca memoria para estrutura e a retorna
 inimigo_t * inicia_inimigo(int rep, int sprite_x, int sprite_y);
 
+//Desaloca memoria da estrutura
+void destroi_inimigo(inimigo_t * inimigo);
+
 //Desenha o inimigo na tela
 void atualiza_inimigo(inimigo_t * player, ALLEGRO_BITMAP * sprites);
 
@@ -31,5 +34,6 @@ void move_inimigo(inimigo_t * inimigo, int x, int y);
 
 //Mata o inimigo
 void morte_inimigo(inimigo_t * inimigo);
+
 
 #endif

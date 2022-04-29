@@ -216,7 +216,7 @@ void gravidade(cenario_t * cenario, player_t * player, int i, int j, char obj, i
         morte(player);
     }
 
-    //ARRUMAR ESSA PARTE
+    //Verifica se um objeto caiu na cabeca de algum inimigo
     for (int k = 0; k < cenario->qtd_inimigos; k++)
     {
         inimigo_t * inimigo = cenario->inimigos[k];
@@ -337,6 +337,15 @@ cenario_t * inicia_cenario()
     return cenario;
 }
 
+void destroi_cenario(cenario_t * cenario)
+{
+    free(cenario->mapa[0]);
+    free(cenario->mapa);
+
+    destroi_inimigos(cenario);
+    free(cenario->inimigos);
+}
+
 void inicia_sons(cenario_t * cenario)
 {
     //Inicia todos os sons do cenario
@@ -437,7 +446,7 @@ void destroi_inimigos(cenario_t * cenario)
 {
     //Libera memoria utilizada por todos inimigos da fase
     for (int i = 0 ; i < cenario->qtd_inimigos; i++)
-        free(cenario->inimigos[i]);
+        destroi_inimigo(cenario->inimigos[i]);
 
     cenario->qtd_inimigos = 0;       
 }

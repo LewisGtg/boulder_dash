@@ -5,5 +5,6 @@ Instruções:
 4.O player morre caso colida com inimigos
 5.Inimigos morrem caso alguma pedra ou cristal caiam em sua cabeca
 6.Utilize PgUp e PgDown para alternar entre as fases.
-
+7.Aperte esc uma vez para encerrar o jogo e mostrar a pontuacao.
+8.Aperte esc duas vezes para fechar o jogo.
 Feito por Lewis.

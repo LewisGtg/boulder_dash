@@ -59,6 +59,8 @@ typedef struct cenario {
 //Aloca memoria para o cenario e retorna o endereco
 cenario_t * inicia_cenario();
 
+void destroi_cenario(cenario_t * cenario);
+
 //Carrega sprites do cenario
 void atualiza_cenario(cenario_t * cenario, ALLEGRO_BITMAP * sprites);
 

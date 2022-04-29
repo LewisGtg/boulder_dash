@@ -24,6 +24,9 @@ typedef struct player {
 //Aloca memoria para o player, define sua posicao inicial, e retorna seu endereco
 player_t * inicia_player();
 
+//Desaloca memoria utilizada
+void destroi_player(player_t * player);
+
 //Desenha o player na tela e atualiza a sprite
 void atualiza_player(player_t * player, ALLEGRO_BITMAP * sprites);
 
