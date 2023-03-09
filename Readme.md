@@ -15,6 +15,7 @@ Projeto desenvolvido para a disciplina "Programação de Computadores II", no qu
 Boulder Dash tem como objetivo capturar o número mínimo de cristais por fase para poder avançar. O personagem morre caso algo caia em sua cabeça (inclusive cristais), e também caso encoste em algum inimigo.
 
 Pode-se acessar as instruções apertando a tecla H.
+
 Há um easteregg que ao digitar "ci1002" (código da disciplina Programação de Computadores II) é habilitado um cheatcode.
 
 ## Gameplay
